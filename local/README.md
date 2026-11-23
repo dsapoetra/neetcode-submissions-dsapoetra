@@ -1,18 +1,22 @@
 # Run the Go solutions locally
 
-Each folder here is one NeetCode problem. Its `main.go` contains:
+Each folder here is one NeetCode problem (all of NeetCode 150). Its `main.go` contains:
 
+0. at the top, the problem described in plain words with example input/output, and a link to the original
 1. a copy of the latest Go submission from `Data Structures & Algorithms/<problem>/`
 2. the types NeetCode normally provides (`ListNode`, `TreeNode`, ...)
 3. a `main()` with commented test cases. For every case it prints `PASS` / `FAIL`, the input, the result and the expected result
 
 The synced `submission-*.go` files are not touched, because NeetCode's GitHub Sync owns them.
 
+The folders are numbered from easy to hard, using the difficulty shown on neetcode.io:
+`001`-`028` Easy, `029`-`129` Medium, `130`-`150` Hard. Inside one difficulty they follow the NeetCode 150 list order.
+
 ## Run one problem
 
 ```sh
 cd local
-go run ./two-integer-sum
+go run ./003-two-integer-sum
 ```
 
 ## Run every problem
