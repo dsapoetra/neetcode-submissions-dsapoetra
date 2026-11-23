@@ -65,33 +65,40 @@ func main() {
 	// The triplets may come back in any order, so we sort them before comparing.
 
 	// Example 1 from the problem.
-	check("example 1", sortRows(threeSum([]int{-1, 0, 1, 2, -1, -4})), [][]int{{-1, -1, 2}, {-1, 0, 1}})
+	check("example 1", `sortRows(threeSum([]int{-1, 0, 1, 2, -1, -4}))`,
+		sortRows(threeSum([]int{-1, 0, 1, 2, -1, -4})), [][]int{{-1, -1, 2}, {-1, 0, 1}})
 
 	// Example 2 from the problem: no triplet adds up to 0.
-	check("example 2: no triplet", sortRows(threeSum([]int{0, 1, 1})), [][]int{})
+	check("example 2: no triplet", `sortRows(threeSum([]int{0, 1, 1}))`,
+		sortRows(threeSum([]int{0, 1, 1})), [][]int{})
 
 	// Example 3 from the problem: three zeros.
-	check("example 3: three zeros", sortRows(threeSum([]int{0, 0, 0})), [][]int{{0, 0, 0}})
+	check("example 3: three zeros", `sortRows(threeSum([]int{0, 0, 0}))`,
+		sortRows(threeSum([]int{0, 0, 0})), [][]int{{0, 0, 0}})
 
 	// Four zeros must still give only ONE triplet (no duplicates).
-	check("four zeros, one triplet", sortRows(threeSum([]int{0, 0, 0, 0})), [][]int{{0, 0, 0}})
+	check("four zeros, one triplet", `sortRows(threeSum([]int{0, 0, 0, 0}))`,
+		sortRows(threeSum([]int{0, 0, 0, 0})), [][]int{{0, 0, 0}})
 
 	// Only positive numbers can never add up to 0.
-	check("all positive", sortRows(threeSum([]int{1, 2, 3})), [][]int{})
+	check("all positive", `sortRows(threeSum([]int{1, 2, 3}))`,
+		sortRows(threeSum([]int{1, 2, 3})), [][]int{})
 
 	// Two different triplets share the same first number.
-	check("same first number", sortRows(threeSum([]int{-2, 0, 1, 1, 2})), [][]int{{-2, 0, 2}, {-2, 1, 1}})
+	check("same first number", `sortRows(threeSum([]int{-2, 0, 1, 1, 2}))`,
+		sortRows(threeSum([]int{-2, 0, 1, 1, 2})), [][]int{{-2, 0, 2}, {-2, 1, 1}})
 
 	// Exactly three numbers that work.
-	check("exactly three numbers", sortRows(threeSum([]int{-1, 0, 1})), [][]int{{-1, 0, 1}})
+	check("exactly three numbers", `sortRows(threeSum([]int{-1, 0, 1}))`,
+		sortRows(threeSum([]int{-1, 0, 1})), [][]int{{-1, 0, 1}})
 
 	// Fewer than three numbers: no triplet is possible.
-	check("too few numbers", sortRows(threeSum([]int{1, -1})), [][]int{})
+	check("too few numbers", `sortRows(threeSum([]int{1, -1}))`,
+		sortRows(threeSum([]int{1, -1})), [][]int{})
 
 	// Many duplicates: each triplet must appear only once.
-	check("many duplicates",
-		sortRows(threeSum([]int{-4, -2, -2, -2, 0, 1, 2, 2, 2, 3, 3, 4, 4, 6, 6})),
-		[][]int{{-4, -2, 6}, {-4, 0, 4}, {-4, 1, 3}, {-4, 2, 2}, {-2, -2, 4}, {-2, 0, 2}})
+	check("many duplicates", `sortRows(threeSum([]int{-4, -2, -2, -2, 0, 1, 2, 2, 2, 3, 3, 4, 4, 6, 6}))`,
+		sortRows(threeSum([]int{-4, -2, -2, -2, 0, 1, 2, 2, 2, 3, 3, 4, 4, 6, 6})), [][]int{{-4, -2, 6}, {-4, 0, 4}, {-4, 1, 3}, {-4, 2, 2}, {-2, -2, 4}, {-2, 0, 2}})
 
 	report()
 }
@@ -119,21 +126,38 @@ func sortRows(rows [][]int) [][]int {
 // passed and failed count the test results.
 var passed, failed int
 
-// check compares the answer we got with the answer we want, and prints
-// PASS or FAIL for that test case.
-func check(name string, got interface{}, want interface{}) {
+// check runs one test case. It prints the input, the result we got and the
+// result we expected, with PASS or FAIL in front.
+//
+//	name:  a short description of the case
+//	input: the call we are testing, written as text so it can be printed
+//	got:   the answer the solution returned
+//	want:  the answer we expect
+func check(name string, input string, got interface{}, want interface{}) {
+	status := "PASS"
 	if fmt.Sprint(got) == fmt.Sprint(want) {
 		passed++
-		fmt.Printf("PASS  %s\n", name)
 	} else {
 		failed++
-		fmt.Printf("FAIL  %s\n      got:  %v\n      want: %v\n", name, got, want)
+		status = "FAIL"
 	}
+	fmt.Printf("%s  %s\n", status, name)
+	fmt.Printf("      input:    %s\n", input)
+	fmt.Printf("      result:   %s\n", show(got))
+	fmt.Printf("      expected: %s\n\n", show(want))
+}
+
+// show turns a value into text. Strings get quotes, so an empty string is visible.
+func show(value interface{}) string {
+	if text, ok := value.(string); ok {
+		return fmt.Sprintf("%q", text)
+	}
+	return fmt.Sprint(value)
 }
 
 // report prints the total. The program exits with an error if a test failed.
 func report() {
-	fmt.Printf("\n%d passed, %d failed\n", passed, failed)
+	fmt.Printf("%d passed, %d failed\n", passed, failed)
 	if failed > 0 {
 		os.Exit(1)
 	}

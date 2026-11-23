@@ -57,34 +57,44 @@ func mergeTwoLists(list1 *ListNode, list2 *ListNode) *ListNode {
 
 func main() {
 	// Example 1 from the problem.
-	check("example 1", listToSlice(mergeTwoLists(makeList(1, 2, 4), makeList(1, 3, 5))), []int{1, 1, 2, 3, 4, 5})
+	check("example 1", `listToSlice(mergeTwoLists(makeList(1, 2, 4), makeList(1, 3, 5)))`,
+		listToSlice(mergeTwoLists(makeList(1, 2, 4), makeList(1, 3, 5))), []int{1, 1, 2, 3, 4, 5})
 
 	// Example 2 from the problem: the first list is empty.
-	check("example 2: first empty", listToSlice(mergeTwoLists(makeList(), makeList(1, 2))), []int{1, 2})
+	check("example 2: first empty", `listToSlice(mergeTwoLists(makeList(), makeList(1, 2)))`,
+		listToSlice(mergeTwoLists(makeList(), makeList(1, 2))), []int{1, 2})
 
 	// Example 3 from the problem: both lists are empty.
-	check("example 3: both empty", listToSlice(mergeTwoLists(makeList(), makeList())), []int{})
+	check("example 3: both empty", `listToSlice(mergeTwoLists(makeList(), makeList()))`,
+		listToSlice(mergeTwoLists(makeList(), makeList())), []int{})
 
 	// The second list is empty.
-	check("second empty", listToSlice(mergeTwoLists(makeList(1), makeList())), []int{1})
+	check("second empty", `listToSlice(mergeTwoLists(makeList(1), makeList()))`,
+		listToSlice(mergeTwoLists(makeList(1), makeList())), []int{1})
 
 	// Everything in list 1 is smaller than everything in list 2.
-	check("list 1 completely first", listToSlice(mergeTwoLists(makeList(1, 2, 3), makeList(4, 5, 6))), []int{1, 2, 3, 4, 5, 6})
+	check("list 1 completely first", `listToSlice(mergeTwoLists(makeList(1, 2, 3), makeList(4, 5, 6)))`,
+		listToSlice(mergeTwoLists(makeList(1, 2, 3), makeList(4, 5, 6))), []int{1, 2, 3, 4, 5, 6})
 
 	// Everything in list 2 is smaller than everything in list 1.
-	check("list 2 completely first", listToSlice(mergeTwoLists(makeList(4, 5, 6), makeList(1, 2, 3))), []int{1, 2, 3, 4, 5, 6})
+	check("list 2 completely first", `listToSlice(mergeTwoLists(makeList(4, 5, 6), makeList(1, 2, 3)))`,
+		listToSlice(mergeTwoLists(makeList(4, 5, 6), makeList(1, 2, 3))), []int{1, 2, 3, 4, 5, 6})
 
 	// The lists take turns (like a zipper).
-	check("taking turns", listToSlice(mergeTwoLists(makeList(1, 3, 5), makeList(2, 4, 6))), []int{1, 2, 3, 4, 5, 6})
+	check("taking turns", `listToSlice(mergeTwoLists(makeList(1, 3, 5), makeList(2, 4, 6)))`,
+		listToSlice(mergeTwoLists(makeList(1, 3, 5), makeList(2, 4, 6))), []int{1, 2, 3, 4, 5, 6})
 
 	// Equal values in both lists: all of them must be kept.
-	check("equal values", listToSlice(mergeTwoLists(makeList(1, 1), makeList(1, 1))), []int{1, 1, 1, 1})
+	check("equal values", `listToSlice(mergeTwoLists(makeList(1, 1), makeList(1, 1)))`,
+		listToSlice(mergeTwoLists(makeList(1, 1), makeList(1, 1))), []int{1, 1, 1, 1})
 
 	// Negative values.
-	check("negative values", listToSlice(mergeTwoLists(makeList(-5, 0), makeList(-3, 7))), []int{-5, -3, 0, 7})
+	check("negative values", `listToSlice(mergeTwoLists(makeList(-5, 0), makeList(-3, 7)))`,
+		listToSlice(mergeTwoLists(makeList(-5, 0), makeList(-3, 7))), []int{-5, -3, 0, 7})
 
 	// Very different lengths.
-	check("different lengths", listToSlice(mergeTwoLists(makeList(1), makeList(2, 3, 4, 5))), []int{1, 2, 3, 4, 5})
+	check("different lengths", `listToSlice(mergeTwoLists(makeList(1), makeList(2, 3, 4, 5)))`,
+		listToSlice(mergeTwoLists(makeList(1), makeList(2, 3, 4, 5))), []int{1, 2, 3, 4, 5})
 
 	report()
 }
@@ -116,21 +126,38 @@ func listToSlice(head *ListNode) []int {
 // passed and failed count the test results.
 var passed, failed int
 
-// check compares the answer we got with the answer we want, and prints
-// PASS or FAIL for that test case.
-func check(name string, got interface{}, want interface{}) {
+// check runs one test case. It prints the input, the result we got and the
+// result we expected, with PASS or FAIL in front.
+//
+//	name:  a short description of the case
+//	input: the call we are testing, written as text so it can be printed
+//	got:   the answer the solution returned
+//	want:  the answer we expect
+func check(name string, input string, got interface{}, want interface{}) {
+	status := "PASS"
 	if fmt.Sprint(got) == fmt.Sprint(want) {
 		passed++
-		fmt.Printf("PASS  %s\n", name)
 	} else {
 		failed++
-		fmt.Printf("FAIL  %s\n      got:  %v\n      want: %v\n", name, got, want)
+		status = "FAIL"
 	}
+	fmt.Printf("%s  %s\n", status, name)
+	fmt.Printf("      input:    %s\n", input)
+	fmt.Printf("      result:   %s\n", show(got))
+	fmt.Printf("      expected: %s\n\n", show(want))
+}
+
+// show turns a value into text. Strings get quotes, so an empty string is visible.
+func show(value interface{}) string {
+	if text, ok := value.(string); ok {
+		return fmt.Sprintf("%q", text)
+	}
+	return fmt.Sprint(value)
 }
 
 // report prints the total. The program exits with an error if a test failed.
 func report() {
-	fmt.Printf("\n%d passed, %d failed\n", passed, failed)
+	fmt.Printf("%d passed, %d failed\n", passed, failed)
 	if failed > 0 {
 		os.Exit(1)
 	}

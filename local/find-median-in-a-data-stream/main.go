@@ -58,52 +58,57 @@ func (this *MedianFinder) FindMedian() float64 {
 // ===================== Test cases =====================
 
 func main() {
-	// Example from the problem.
-	mf := Constructor()
-	mf.AddNum(1)
-	check("one number: the number itself", mf.FindMedian(), 1.0)
-	mf.AddNum(2)
-	check("two numbers: the average", mf.FindMedian(), 1.5)
-	mf.AddNum(3)
-	check("three numbers: the middle one", mf.FindMedian(), 2.0)
+	// medianOf creates a new MedianFinder, adds the numbers one by one (in
+	// the order given) and returns the median at the end.
+	medianOf := func(nums ...int) float64 {
+		finder := Constructor()
+		for _, num := range nums {
+			finder.AddNum(num)
+		}
+		return finder.FindMedian()
+	}
+
+	// Example from the problem, step by step.
+	check("one number: the number itself", `medianOf(1)`,
+		medianOf(1), 1.0)
+	check("two numbers: the average", `medianOf(1, 2)`,
+		medianOf(1, 2), 1.5)
+	check("three numbers: the middle one", `medianOf(1, 2, 3)`,
+		medianOf(1, 2, 3), 2.0)
 
 	// Numbers arriving from big to small.
-	mf = Constructor()
-	mf.AddNum(5)
-	mf.AddNum(4)
-	mf.AddNum(3)
-	mf.AddNum(2)
-	check("descending order", mf.FindMedian(), 3.5)
+	check("descending order", `medianOf(5, 4, 3, 2)`,
+		medianOf(5, 4, 3, 2), 3.5)
 
 	// Negative numbers.
-	mf = Constructor()
-	mf.AddNum(-1)
-	mf.AddNum(-2)
-	check("two negatives", mf.FindMedian(), -1.5)
-	mf.AddNum(-3)
-	check("three negatives", mf.FindMedian(), -2.0)
+	check("two negatives", `medianOf(-1, -2)`,
+		medianOf(-1, -2), -1.5)
+	check("three negatives", `medianOf(-1, -2, -3)`,
+		medianOf(-1, -2, -3), -2.0)
 
 	// The same number several times.
-	mf = Constructor()
-	mf.AddNum(2)
-	mf.AddNum(2)
-	mf.AddNum(2)
-	check("duplicates", mf.FindMedian(), 2.0)
+	check("duplicates", `medianOf(2, 2, 2)`,
+		medianOf(2, 2, 2), 2.0)
 
 	// Numbers in random order: sorted they are 1, 3, 5, 15.
-	mf = Constructor()
-	mf.AddNum(5)
-	mf.AddNum(15)
-	mf.AddNum(1)
-	mf.AddNum(3)
-	check("random order", mf.FindMedian(), 4.0)
+	check("random order", `medianOf(5, 15, 1, 3)`,
+		medianOf(5, 15, 1, 3), 4.0)
 
 	// One very big number does not move the median much.
-	mf = Constructor()
-	mf.AddNum(1)
-	mf.AddNum(2)
-	mf.AddNum(1000)
-	check("one huge number", mf.FindMedian(), 2.0)
+	check("one huge number", `medianOf(1, 2, 1000)`,
+		medianOf(1, 2, 1000), 2.0)
+
+	// FindMedian can be called between AddNum calls on the SAME finder.
+	finder := Constructor()
+	finder.AddNum(10)
+	finder.AddNum(20)
+	fmt.Println(`-- same finder: AddNum(10), AddNum(20)`)
+	check("same finder, after two numbers", `finder.FindMedian()`,
+		finder.FindMedian(), 15.0)
+	finder.AddNum(30)
+	fmt.Println(`-- same finder: AddNum(30)`)
+	check("same finder, after a third number", `finder.FindMedian()`,
+		finder.FindMedian(), 20.0)
 
 	report()
 }
@@ -113,21 +118,38 @@ func main() {
 // passed and failed count the test results.
 var passed, failed int
 
-// check compares the answer we got with the answer we want, and prints
-// PASS or FAIL for that test case.
-func check(name string, got interface{}, want interface{}) {
+// check runs one test case. It prints the input, the result we got and the
+// result we expected, with PASS or FAIL in front.
+//
+//	name:  a short description of the case
+//	input: the call we are testing, written as text so it can be printed
+//	got:   the answer the solution returned
+//	want:  the answer we expect
+func check(name string, input string, got interface{}, want interface{}) {
+	status := "PASS"
 	if fmt.Sprint(got) == fmt.Sprint(want) {
 		passed++
-		fmt.Printf("PASS  %s\n", name)
 	} else {
 		failed++
-		fmt.Printf("FAIL  %s\n      got:  %v\n      want: %v\n", name, got, want)
+		status = "FAIL"
 	}
+	fmt.Printf("%s  %s\n", status, name)
+	fmt.Printf("      input:    %s\n", input)
+	fmt.Printf("      result:   %s\n", show(got))
+	fmt.Printf("      expected: %s\n\n", show(want))
+}
+
+// show turns a value into text. Strings get quotes, so an empty string is visible.
+func show(value interface{}) string {
+	if text, ok := value.(string); ok {
+		return fmt.Sprintf("%q", text)
+	}
+	return fmt.Sprint(value)
 }
 
 // report prints the total. The program exits with an error if a test failed.
 func report() {
-	fmt.Printf("\n%d passed, %d failed\n", passed, failed)
+	fmt.Printf("%d passed, %d failed\n", passed, failed)
 	if failed > 0 {
 		os.Exit(1)
 	}

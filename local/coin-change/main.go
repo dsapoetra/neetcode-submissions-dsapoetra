@@ -53,32 +53,41 @@ func coinChange(coins []int, amount int) int {
 
 func main() {
 	// Example 1 from the problem: 10 + 1 + 1.
-	check("example 1", coinChange([]int{1, 5, 10}, 12), 3)
+	check("example 1", `coinChange([]int{1, 5, 10}, 12)`,
+		coinChange([]int{1, 5, 10}, 12), 3)
 
 	// Example 2 from the problem: 3 cannot be made from 2s.
-	check("example 2: impossible", coinChange([]int{2}, 3), -1)
+	check("example 2: impossible", `coinChange([]int{2}, 3)`,
+		coinChange([]int{2}, 3), -1)
 
 	// Example 3 from the problem: amount 0 needs no coins.
-	check("example 3: amount 0", coinChange([]int{1}, 0), 0)
+	check("example 3: amount 0", `coinChange([]int{1}, 0)`,
+		coinChange([]int{1}, 0), 0)
 
 	// The classic example: 5 + 5 + 1.
-	check("classic", coinChange([]int{1, 2, 5}, 11), 3)
+	check("classic", `coinChange([]int{1, 2, 5}, 11)`,
+		coinChange([]int{1, 2, 5}, 11), 3)
 
 	// The coins are not sorted: 10 + 10 + 5 + 2.
-	check("unsorted coins", coinChange([]int{2, 5, 10, 1}, 27), 4)
+	check("unsorted coins", `coinChange([]int{2, 5, 10, 1}, 27)`,
+		coinChange([]int{2, 5, 10, 1}, 27), 4)
 
 	// One coin is exactly the amount.
-	check("one coin is enough", coinChange([]int{5}, 5), 1)
+	check("one coin is enough", `coinChange([]int{5}, 5)`,
+		coinChange([]int{5}, 5), 1)
 
 	// Tricky: taking the biggest coin first (4+1+1 = 3 coins) is NOT best.
 	// 3 + 3 = 2 coins. This is why we need dynamic programming.
-	check("greedy is wrong here", coinChange([]int{1, 3, 4}, 6), 2)
+	check("greedy is wrong here", `coinChange([]int{1, 3, 4}, 6)`,
+		coinChange([]int{1, 3, 4}, 6), 2)
 
 	// Amount is smaller than every coin.
-	check("amount smaller than all coins", coinChange([]int{2}, 1), -1)
+	check("amount smaller than all coins", `coinChange([]int{2}, 1)`,
+		coinChange([]int{2}, 1), -1)
 
 	// A big case to make sure it is fast enough.
-	check("big case", coinChange([]int{186, 419, 83, 408}, 6249), 20)
+	check("big case", `coinChange([]int{186, 419, 83, 408}, 6249)`,
+		coinChange([]int{186, 419, 83, 408}, 6249), 20)
 
 	report()
 }
@@ -88,21 +97,38 @@ func main() {
 // passed and failed count the test results.
 var passed, failed int
 
-// check compares the answer we got with the answer we want, and prints
-// PASS or FAIL for that test case.
-func check(name string, got interface{}, want interface{}) {
+// check runs one test case. It prints the input, the result we got and the
+// result we expected, with PASS or FAIL in front.
+//
+//	name:  a short description of the case
+//	input: the call we are testing, written as text so it can be printed
+//	got:   the answer the solution returned
+//	want:  the answer we expect
+func check(name string, input string, got interface{}, want interface{}) {
+	status := "PASS"
 	if fmt.Sprint(got) == fmt.Sprint(want) {
 		passed++
-		fmt.Printf("PASS  %s\n", name)
 	} else {
 		failed++
-		fmt.Printf("FAIL  %s\n      got:  %v\n      want: %v\n", name, got, want)
+		status = "FAIL"
 	}
+	fmt.Printf("%s  %s\n", status, name)
+	fmt.Printf("      input:    %s\n", input)
+	fmt.Printf("      result:   %s\n", show(got))
+	fmt.Printf("      expected: %s\n\n", show(want))
+}
+
+// show turns a value into text. Strings get quotes, so an empty string is visible.
+func show(value interface{}) string {
+	if text, ok := value.(string); ok {
+		return fmt.Sprintf("%q", text)
+	}
+	return fmt.Sprint(value)
 }
 
 // report prints the total. The program exits with an error if a test failed.
 func report() {
-	fmt.Printf("\n%d passed, %d failed\n", passed, failed)
+	fmt.Printf("%d passed, %d failed\n", passed, failed)
 	if failed > 0 {
 		os.Exit(1)
 	}

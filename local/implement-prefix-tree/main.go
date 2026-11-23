@@ -79,44 +79,65 @@ func (this *PrefixTree) find(text string) *prefixNode {
 // ===================== Test cases =====================
 
 func main() {
+	// The trie remembers what was inserted before, so the lines starting
+	// with "--" show every Insert in the output.
 	trie := Constructor()
 
 	// Example from the problem.
 	trie.Insert("dog")
-	check("search a word we inserted", trie.Search("dog"), true)
-	check("a prefix is not a word", trie.Search("do"), false)
-	check("but it IS a prefix", trie.StartsWith("do"), true)
+	fmt.Println(`-- trie.Insert("dog")`)
+	check("search a word we inserted", `trie.Search("dog")`,
+		trie.Search("dog"), true)
+	check("a prefix is not a word", `trie.Search("do")`,
+		trie.Search("do"), false)
+	check("but it IS a prefix", `trie.StartsWith("do")`,
+		trie.StartsWith("do"), true)
 
 	// Now insert the prefix as its own word.
 	trie.Insert("do")
-	check("after inserting it, the prefix is a word", trie.Search("do"), true)
+	fmt.Println(`-- trie.Insert("do")`)
+	check("after inserting it, the prefix is a word", `trie.Search("do")`,
+		trie.Search("do"), true)
 
 	// Words that were never inserted.
-	check("unknown word", trie.Search("cat"), false)
-	check("unknown prefix", trie.StartsWith("cat"), false)
+	check("unknown word", `trie.Search("cat")`,
+		trie.Search("cat"), false)
+	check("unknown prefix", `trie.StartsWith("cat")`,
+		trie.StartsWith("cat"), false)
 
 	// A whole word also counts as a prefix.
-	check("whole word as prefix", trie.StartsWith("dog"), true)
+	check("whole word as prefix", `trie.StartsWith("dog")`,
+		trie.StartsWith("dog"), true)
 
 	// Longer than anything we inserted.
-	check("longer than the word (search)", trie.Search("dogs"), false)
-	check("longer than the word (prefix)", trie.StartsWith("dogs"), false)
+	check("longer than the word (search)", `trie.Search("dogs")`,
+		trie.Search("dogs"), false)
+	check("longer than the word (prefix)", `trie.StartsWith("dogs")`,
+		trie.StartsWith("dogs"), false)
 
 	// A second word that shares no letters with the first.
 	trie.Insert("apple")
-	check("second word", trie.Search("apple"), true)
-	check("prefix of second word is not a word", trie.Search("app"), false)
-	check("prefix of second word", trie.StartsWith("app"), true)
+	fmt.Println(`-- trie.Insert("apple")`)
+	check("second word", `trie.Search("apple")`,
+		trie.Search("apple"), true)
+	check("prefix of second word is not a word", `trie.Search("app")`,
+		trie.Search("app"), false)
+	check("prefix of second word", `trie.StartsWith("app")`,
+		trie.StartsWith("app"), true)
 
 	// Every word starts with the empty prefix.
-	check("empty prefix", trie.StartsWith(""), true)
+	check("empty prefix", `trie.StartsWith("")`,
+		trie.StartsWith(""), true)
 
 	// But the empty word was never inserted.
-	check("empty word", trie.Search(""), false)
+	check("empty word", `trie.Search("")`,
+		trie.Search(""), false)
 
 	// A new trie knows nothing about the old one.
 	empty := Constructor()
-	check("fresh trie is empty", empty.Search("dog"), false)
+	fmt.Println(`-- empty := Constructor()   (a new, empty trie)`)
+	check("fresh trie is empty", `empty.Search("dog")`,
+		empty.Search("dog"), false)
 
 	report()
 }
@@ -126,21 +147,38 @@ func main() {
 // passed and failed count the test results.
 var passed, failed int
 
-// check compares the answer we got with the answer we want, and prints
-// PASS or FAIL for that test case.
-func check(name string, got interface{}, want interface{}) {
+// check runs one test case. It prints the input, the result we got and the
+// result we expected, with PASS or FAIL in front.
+//
+//	name:  a short description of the case
+//	input: the call we are testing, written as text so it can be printed
+//	got:   the answer the solution returned
+//	want:  the answer we expect
+func check(name string, input string, got interface{}, want interface{}) {
+	status := "PASS"
 	if fmt.Sprint(got) == fmt.Sprint(want) {
 		passed++
-		fmt.Printf("PASS  %s\n", name)
 	} else {
 		failed++
-		fmt.Printf("FAIL  %s\n      got:  %v\n      want: %v\n", name, got, want)
+		status = "FAIL"
 	}
+	fmt.Printf("%s  %s\n", status, name)
+	fmt.Printf("      input:    %s\n", input)
+	fmt.Printf("      result:   %s\n", show(got))
+	fmt.Printf("      expected: %s\n\n", show(want))
+}
+
+// show turns a value into text. Strings get quotes, so an empty string is visible.
+func show(value interface{}) string {
+	if text, ok := value.(string); ok {
+		return fmt.Sprintf("%q", text)
+	}
+	return fmt.Sprint(value)
 }
 
 // report prints the total. The program exits with an error if a test failed.
 func report() {
-	fmt.Printf("\n%d passed, %d failed\n", passed, failed)
+	fmt.Printf("%d passed, %d failed\n", passed, failed)
 	if failed > 0 {
 		os.Exit(1)
 	}

@@ -49,40 +49,52 @@ func numDecodings(s string) int {
 
 func main() {
 	// Example 1 from the problem: "1 2" (AB) or "12" (L).
-	check("example 1", numDecodings("12"), 2)
+	check("example 1", `numDecodings("12")`,
+		numDecodings("12"), 2)
 
 	// Example 2 from the problem: a leading zero cannot be decoded.
-	check("example 2: leading zero", numDecodings("01"), 0)
+	check("example 2: leading zero", `numDecodings("01")`,
+		numDecodings("01"), 0)
 
 	// The classic example: "2 2 6", "22 6", "2 26".
-	check("classic 226", numDecodings("226"), 3)
+	check("classic 226", `numDecodings("226")`,
+		numDecodings("226"), 3)
 
 	// A single zero.
-	check("only zero", numDecodings("0"), 0)
+	check("only zero", `numDecodings("0")`,
+		numDecodings("0"), 0)
 
 	// "10" can only be J (1 and 0 separately does not work).
-	check("10", numDecodings("10"), 1)
+	check("10", `numDecodings("10")`,
+		numDecodings("10"), 1)
 
 	// 27 is bigger than 26, so only "2 7".
-	check("27 is too big", numDecodings("27"), 1)
+	check("27 is too big", `numDecodings("27")`,
+		numDecodings("27"), 1)
 
 	// "06" is not a valid code.
-	check("06", numDecodings("06"), 0)
+	check("06", `numDecodings("06")`,
+		numDecodings("06"), 0)
 
 	// Two zeros in a row can never be decoded.
-	check("100", numDecodings("100"), 0)
+	check("100", `numDecodings("100")`,
+		numDecodings("100"), 0)
 
 	// "1 1 10 6" or "11 10 6".
-	check("11106", numDecodings("11106"), 2)
+	check("11106", `numDecodings("11106")`,
+		numDecodings("11106"), 2)
 
 	// One digit.
-	check("one digit", numDecodings("1"), 1)
+	check("one digit", `numDecodings("1")`,
+		numDecodings("1"), 1)
 
 	// Six 1s: every split works, the count follows Fibonacci.
-	check("111111", numDecodings("111111"), 13)
+	check("111111", `numDecodings("111111")`,
+		numDecodings("111111"), 13)
 
 	// Only "2 10 1" works.
-	check("2101", numDecodings("2101"), 1)
+	check("2101", `numDecodings("2101")`,
+		numDecodings("2101"), 1)
 
 	report()
 }
@@ -92,21 +104,38 @@ func main() {
 // passed and failed count the test results.
 var passed, failed int
 
-// check compares the answer we got with the answer we want, and prints
-// PASS or FAIL for that test case.
-func check(name string, got interface{}, want interface{}) {
+// check runs one test case. It prints the input, the result we got and the
+// result we expected, with PASS or FAIL in front.
+//
+//	name:  a short description of the case
+//	input: the call we are testing, written as text so it can be printed
+//	got:   the answer the solution returned
+//	want:  the answer we expect
+func check(name string, input string, got interface{}, want interface{}) {
+	status := "PASS"
 	if fmt.Sprint(got) == fmt.Sprint(want) {
 		passed++
-		fmt.Printf("PASS  %s\n", name)
 	} else {
 		failed++
-		fmt.Printf("FAIL  %s\n      got:  %v\n      want: %v\n", name, got, want)
+		status = "FAIL"
 	}
+	fmt.Printf("%s  %s\n", status, name)
+	fmt.Printf("      input:    %s\n", input)
+	fmt.Printf("      result:   %s\n", show(got))
+	fmt.Printf("      expected: %s\n\n", show(want))
+}
+
+// show turns a value into text. Strings get quotes, so an empty string is visible.
+func show(value interface{}) string {
+	if text, ok := value.(string); ok {
+		return fmt.Sprintf("%q", text)
+	}
+	return fmt.Sprint(value)
 }
 
 // report prints the total. The program exits with an error if a test failed.
 func report() {
-	fmt.Printf("\n%d passed, %d failed\n", passed, failed)
+	fmt.Printf("%d passed, %d failed\n", passed, failed)
 	if failed > 0 {
 		os.Exit(1)
 	}

@@ -43,41 +43,40 @@ func main() {
 	// The groups may come back in any order, so we sort them before comparing.
 
 	// Example 1 from the problem.
-	check("example 1",
-		sortGroups(groupAnagrams([]string{"act", "pots", "tops", "cat", "stop", "hat"})),
-		[][]string{{"act", "cat"}, {"hat"}, {"pots", "stop", "tops"}})
+	check("example 1", `sortGroups(groupAnagrams([]string{"act", "pots", "tops", "cat", "stop", "hat"}))`,
+		sortGroups(groupAnagrams([]string{"act", "pots", "tops", "cat", "stop", "hat"})), [][]string{{"act", "cat"}, {"hat"}, {"pots", "stop", "tops"}})
 
 	// Example 2 from the problem: one word is one group.
-	check("example 2: one word", sortGroups(groupAnagrams([]string{"x"})), [][]string{{"x"}})
+	check("example 2: one word", `sortGroups(groupAnagrams([]string{"x"}))`,
+		sortGroups(groupAnagrams([]string{"x"})), [][]string{{"x"}})
 
 	// Example 3 from the problem: the empty string is a valid word.
-	check("example 3: empty string", len(groupAnagrams([]string{""})), 1)
+	check("example 3: empty string", `len(groupAnagrams([]string{""}))`,
+		len(groupAnagrams([]string{""})), 1)
 
 	// No word is an anagram of another: every word is alone.
-	check("no anagrams",
-		sortGroups(groupAnagrams([]string{"abc", "def", "ghi"})),
-		[][]string{{"abc"}, {"def"}, {"ghi"}})
+	check("no anagrams", `sortGroups(groupAnagrams([]string{"abc", "def", "ghi"}))`,
+		sortGroups(groupAnagrams([]string{"abc", "def", "ghi"})), [][]string{{"abc"}, {"def"}, {"ghi"}})
 
 	// Every word is an anagram of the others: one big group.
-	check("all anagrams",
-		sortGroups(groupAnagrams([]string{"abc", "bca", "cab"})),
-		[][]string{{"abc", "bca", "cab"}})
+	check("all anagrams", `sortGroups(groupAnagrams([]string{"abc", "bca", "cab"}))`,
+		sortGroups(groupAnagrams([]string{"abc", "bca", "cab"})), [][]string{{"abc", "bca", "cab"}})
 
 	// The same word twice goes into the same group twice.
-	check("same word twice", sortGroups(groupAnagrams([]string{"aa", "aa"})), [][]string{{"aa", "aa"}})
+	check("same word twice", `sortGroups(groupAnagrams([]string{"aa", "aa"}))`,
+		sortGroups(groupAnagrams([]string{"aa", "aa"})), [][]string{{"aa", "aa"}})
 
 	// Same letters but different counts are NOT anagrams.
-	check("same letters, different counts",
-		sortGroups(groupAnagrams([]string{"aab", "abb"})),
-		[][]string{{"aab"}, {"abb"}})
+	check("same letters, different counts", `sortGroups(groupAnagrams([]string{"aab", "abb"}))`,
+		sortGroups(groupAnagrams([]string{"aab", "abb"})), [][]string{{"aab"}, {"abb"}})
 
 	// Words of different lengths.
-	check("different lengths",
-		sortGroups(groupAnagrams([]string{"a", "ab", "ba", "abc"})),
-		[][]string{{"a"}, {"ab", "ba"}, {"abc"}})
+	check("different lengths", `sortGroups(groupAnagrams([]string{"a", "ab", "ba", "abc"}))`,
+		sortGroups(groupAnagrams([]string{"a", "ab", "ba", "abc"})), [][]string{{"a"}, {"ab", "ba"}, {"abc"}})
 
 	// No words at all: no groups.
-	check("empty input", len(groupAnagrams([]string{})), 0)
+	check("empty input", `len(groupAnagrams([]string{}))`,
+		len(groupAnagrams([]string{})), 0)
 
 	report()
 }
@@ -99,21 +98,38 @@ func sortGroups(groups [][]string) [][]string {
 // passed and failed count the test results.
 var passed, failed int
 
-// check compares the answer we got with the answer we want, and prints
-// PASS or FAIL for that test case.
-func check(name string, got interface{}, want interface{}) {
+// check runs one test case. It prints the input, the result we got and the
+// result we expected, with PASS or FAIL in front.
+//
+//	name:  a short description of the case
+//	input: the call we are testing, written as text so it can be printed
+//	got:   the answer the solution returned
+//	want:  the answer we expect
+func check(name string, input string, got interface{}, want interface{}) {
+	status := "PASS"
 	if fmt.Sprint(got) == fmt.Sprint(want) {
 		passed++
-		fmt.Printf("PASS  %s\n", name)
 	} else {
 		failed++
-		fmt.Printf("FAIL  %s\n      got:  %v\n      want: %v\n", name, got, want)
+		status = "FAIL"
 	}
+	fmt.Printf("%s  %s\n", status, name)
+	fmt.Printf("      input:    %s\n", input)
+	fmt.Printf("      result:   %s\n", show(got))
+	fmt.Printf("      expected: %s\n\n", show(want))
+}
+
+// show turns a value into text. Strings get quotes, so an empty string is visible.
+func show(value interface{}) string {
+	if text, ok := value.(string); ok {
+		return fmt.Sprintf("%q", text)
+	}
+	return fmt.Sprint(value)
 }
 
 // report prints the total. The program exits with an error if a test failed.
 func report() {
-	fmt.Printf("\n%d passed, %d failed\n", passed, failed)
+	fmt.Printf("%d passed, %d failed\n", passed, failed)
 	if failed > 0 {
 		os.Exit(1)
 	}

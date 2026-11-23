@@ -35,34 +35,44 @@ func isAnagram(s string, t string) bool {
 
 func main() {
 	// Example 1 from the problem: same letters, different order.
-	check("example 1: racecar / carrace", isAnagram("racecar", "carrace"), true)
+	check("example 1: racecar / carrace", `isAnagram("racecar", "carrace")`,
+		isAnagram("racecar", "carrace"), true)
 
 	// Example 2 from the problem: 'r' and 'm' differ.
-	check("example 2: jar / jam", isAnagram("jar", "jam"), false)
+	check("example 2: jar / jam", `isAnagram("jar", "jam")`,
+		isAnagram("jar", "jam"), false)
 
 	// Two empty strings have the same (zero) letters.
-	check("both empty", isAnagram("", ""), true)
+	check("both empty", `isAnagram("", "")`,
+		isAnagram("", ""), true)
 
 	// One letter, the same.
-	check("same single letter", isAnagram("a", "a"), true)
+	check("same single letter", `isAnagram("a", "a")`,
+		isAnagram("a", "a"), true)
 
 	// One letter, different.
-	check("different single letter", isAnagram("a", "b"), false)
+	check("different single letter", `isAnagram("a", "b")`,
+		isAnagram("a", "b"), false)
 
 	// Different lengths can never be anagrams.
-	check("different lengths", isAnagram("ab", "a"), false)
+	check("different lengths", `isAnagram("ab", "a")`,
+		isAnagram("ab", "a"), false)
 
 	// Same letters but a different COUNT of each letter.
-	check("same letters, different counts", isAnagram("aab", "abb"), false)
+	check("same letters, different counts", `isAnagram("aab", "abb")`,
+		isAnagram("aab", "abb"), false)
 
 	// A classic pair.
-	check("listen / silent", isAnagram("listen", "silent"), true)
+	check("listen / silent", `isAnagram("listen", "silent")`,
+		isAnagram("listen", "silent"), true)
 
 	// Upper and lower case are different letters.
-	check("case matters", isAnagram("a", "A"), false)
+	check("case matters", `isAnagram("a", "A")`,
+		isAnagram("a", "A"), false)
 
 	// A word is an anagram of itself.
-	check("identical words", isAnagram("hello", "hello"), true)
+	check("identical words", `isAnagram("hello", "hello")`,
+		isAnagram("hello", "hello"), true)
 
 	report()
 }
@@ -72,21 +82,38 @@ func main() {
 // passed and failed count the test results.
 var passed, failed int
 
-// check compares the answer we got with the answer we want, and prints
-// PASS or FAIL for that test case.
-func check(name string, got interface{}, want interface{}) {
+// check runs one test case. It prints the input, the result we got and the
+// result we expected, with PASS or FAIL in front.
+//
+//	name:  a short description of the case
+//	input: the call we are testing, written as text so it can be printed
+//	got:   the answer the solution returned
+//	want:  the answer we expect
+func check(name string, input string, got interface{}, want interface{}) {
+	status := "PASS"
 	if fmt.Sprint(got) == fmt.Sprint(want) {
 		passed++
-		fmt.Printf("PASS  %s\n", name)
 	} else {
 		failed++
-		fmt.Printf("FAIL  %s\n      got:  %v\n      want: %v\n", name, got, want)
+		status = "FAIL"
 	}
+	fmt.Printf("%s  %s\n", status, name)
+	fmt.Printf("      input:    %s\n", input)
+	fmt.Printf("      result:   %s\n", show(got))
+	fmt.Printf("      expected: %s\n\n", show(want))
+}
+
+// show turns a value into text. Strings get quotes, so an empty string is visible.
+func show(value interface{}) string {
+	if text, ok := value.(string); ok {
+		return fmt.Sprintf("%q", text)
+	}
+	return fmt.Sprint(value)
 }
 
 // report prints the total. The program exits with an error if a test failed.
 func report() {
-	fmt.Printf("\n%d passed, %d failed\n", passed, failed)
+	fmt.Printf("%d passed, %d failed\n", passed, failed)
 	if failed > 0 {
 		os.Exit(1)
 	}

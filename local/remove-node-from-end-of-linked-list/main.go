@@ -54,31 +54,40 @@ func removeNthFromEnd(head *ListNode, n int) *ListNode {
 
 func main() {
 	// Example 1 from the problem: the 2nd from the end is 3.
-	check("example 1", listToSlice(removeNthFromEnd(makeList(1, 2, 3, 4), 2)), []int{1, 2, 4})
+	check("example 1", `listToSlice(removeNthFromEnd(makeList(1, 2, 3, 4), 2))`,
+		listToSlice(removeNthFromEnd(makeList(1, 2, 3, 4), 2)), []int{1, 2, 4})
 
 	// Example 2 from the problem: the only node is removed.
-	check("example 2: only node", listToSlice(removeNthFromEnd(makeList(5), 1)), []int{})
+	check("example 2: only node", `listToSlice(removeNthFromEnd(makeList(5), 1))`,
+		listToSlice(removeNthFromEnd(makeList(5), 1)), []int{})
 
 	// Example 3 from the problem: remove the head of a two-node list.
-	check("example 3: remove the head", listToSlice(removeNthFromEnd(makeList(1, 2), 2)), []int{2})
+	check("example 3: remove the head", `listToSlice(removeNthFromEnd(makeList(1, 2), 2))`,
+		listToSlice(removeNthFromEnd(makeList(1, 2), 2)), []int{2})
 
 	// Remove the tail of a two-node list.
-	check("remove the tail", listToSlice(removeNthFromEnd(makeList(1, 2), 1)), []int{1})
+	check("remove the tail", `listToSlice(removeNthFromEnd(makeList(1, 2), 1))`,
+		listToSlice(removeNthFromEnd(makeList(1, 2), 1)), []int{1})
 
 	// The classic example.
-	check("classic", listToSlice(removeNthFromEnd(makeList(1, 2, 3, 4, 5), 2)), []int{1, 2, 3, 5})
+	check("classic", `listToSlice(removeNthFromEnd(makeList(1, 2, 3, 4, 5), 2))`,
+		listToSlice(removeNthFromEnd(makeList(1, 2, 3, 4, 5), 2)), []int{1, 2, 3, 5})
 
 	// n = length of the list: remove the first node.
-	check("n = length (first node)", listToSlice(removeNthFromEnd(makeList(1, 2, 3, 4, 5), 5)), []int{2, 3, 4, 5})
+	check("n = length (first node)", `listToSlice(removeNthFromEnd(makeList(1, 2, 3, 4, 5), 5))`,
+		listToSlice(removeNthFromEnd(makeList(1, 2, 3, 4, 5), 5)), []int{2, 3, 4, 5})
 
 	// n = 1: remove the last node.
-	check("n = 1 (last node)", listToSlice(removeNthFromEnd(makeList(1, 2, 3, 4, 5), 1)), []int{1, 2, 3, 4})
+	check("n = 1 (last node)", `listToSlice(removeNthFromEnd(makeList(1, 2, 3, 4, 5), 1))`,
+		listToSlice(removeNthFromEnd(makeList(1, 2, 3, 4, 5), 1)), []int{1, 2, 3, 4})
 
 	// Remove the middle node.
-	check("middle node", listToSlice(removeNthFromEnd(makeList(1, 2, 3), 2)), []int{1, 3})
+	check("middle node", `listToSlice(removeNthFromEnd(makeList(1, 2, 3), 2))`,
+		listToSlice(removeNthFromEnd(makeList(1, 2, 3), 2)), []int{1, 3})
 
 	// Equal values: exactly one node must go.
-	check("equal values", listToSlice(removeNthFromEnd(makeList(7, 7, 7), 3)), []int{7, 7})
+	check("equal values", `listToSlice(removeNthFromEnd(makeList(7, 7, 7), 3))`,
+		listToSlice(removeNthFromEnd(makeList(7, 7, 7), 3)), []int{7, 7})
 
 	report()
 }
@@ -110,21 +119,38 @@ func listToSlice(head *ListNode) []int {
 // passed and failed count the test results.
 var passed, failed int
 
-// check compares the answer we got with the answer we want, and prints
-// PASS or FAIL for that test case.
-func check(name string, got interface{}, want interface{}) {
+// check runs one test case. It prints the input, the result we got and the
+// result we expected, with PASS or FAIL in front.
+//
+//	name:  a short description of the case
+//	input: the call we are testing, written as text so it can be printed
+//	got:   the answer the solution returned
+//	want:  the answer we expect
+func check(name string, input string, got interface{}, want interface{}) {
+	status := "PASS"
 	if fmt.Sprint(got) == fmt.Sprint(want) {
 		passed++
-		fmt.Printf("PASS  %s\n", name)
 	} else {
 		failed++
-		fmt.Printf("FAIL  %s\n      got:  %v\n      want: %v\n", name, got, want)
+		status = "FAIL"
 	}
+	fmt.Printf("%s  %s\n", status, name)
+	fmt.Printf("      input:    %s\n", input)
+	fmt.Printf("      result:   %s\n", show(got))
+	fmt.Printf("      expected: %s\n\n", show(want))
+}
+
+// show turns a value into text. Strings get quotes, so an empty string is visible.
+func show(value interface{}) string {
+	if text, ok := value.(string); ok {
+		return fmt.Sprintf("%q", text)
+	}
+	return fmt.Sprint(value)
 }
 
 // report prints the total. The program exits with an error if a test failed.
 func report() {
-	fmt.Printf("\n%d passed, %d failed\n", passed, failed)
+	fmt.Printf("%d passed, %d failed\n", passed, failed)
 	if failed > 0 {
 		os.Exit(1)
 	}

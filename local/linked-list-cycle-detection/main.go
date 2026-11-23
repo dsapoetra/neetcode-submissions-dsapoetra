@@ -54,34 +54,44 @@ func main() {
 	// index pos. pos = -1 means there is no cycle.
 
 	// Example 1 from the problem: the tail points back to index 1.
-	check("example 1: tail -> index 1", hasCycle(makeCycleList([]int{1, 2, 3, 4}, 1)), true)
+	check("example 1: tail -> index 1", `hasCycle(makeCycleList([]int{1, 2, 3, 4}, 1))`,
+		hasCycle(makeCycleList([]int{1, 2, 3, 4}, 1)), true)
 
 	// Example 2 from the problem: a normal list.
-	check("example 2: no cycle", hasCycle(makeCycleList([]int{1, 2}, -1)), false)
+	check("example 2: no cycle", `hasCycle(makeCycleList([]int{1, 2}, -1))`,
+		hasCycle(makeCycleList([]int{1, 2}, -1)), false)
 
 	// An empty list has no cycle.
-	check("empty list", hasCycle(nil), false)
+	check("empty list", `hasCycle(nil)`,
+		hasCycle(nil), false)
 
 	// One node, no cycle.
-	check("one node, no cycle", hasCycle(makeCycleList([]int{1}, -1)), false)
+	check("one node, no cycle", `hasCycle(makeCycleList([]int{1}, -1))`,
+		hasCycle(makeCycleList([]int{1}, -1)), false)
 
 	// One node that points to itself.
-	check("one node pointing to itself", hasCycle(makeCycleList([]int{1}, 0)), true)
+	check("one node pointing to itself", `hasCycle(makeCycleList([]int{1}, 0))`,
+		hasCycle(makeCycleList([]int{1}, 0)), true)
 
 	// Two nodes pointing at each other.
-	check("two nodes in a circle", hasCycle(makeCycleList([]int{1, 2}, 0)), true)
+	check("two nodes in a circle", `hasCycle(makeCycleList([]int{1, 2}, 0))`,
+		hasCycle(makeCycleList([]int{1, 2}, 0)), true)
 
 	// The whole list is one big circle (tail -> head).
-	check("tail -> head", hasCycle(makeCycleList([]int{3, 2, 0, -4}, 0)), true)
+	check("tail -> head", `hasCycle(makeCycleList([]int{3, 2, 0, -4}, 0))`,
+		hasCycle(makeCycleList([]int{3, 2, 0, -4}, 0)), true)
 
 	// The last node points to itself.
-	check("tail -> tail", hasCycle(makeCycleList([]int{1, 2, 3}, 2)), true)
+	check("tail -> tail", `hasCycle(makeCycleList([]int{1, 2, 3}, 2))`,
+		hasCycle(makeCycleList([]int{1, 2, 3}, 2)), true)
 
 	// A long list without a cycle.
-	check("long list, no cycle", hasCycle(makeCycleList([]int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, -1)), false)
+	check("long list, no cycle", `hasCycle(makeCycleList([]int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, -1))`,
+		hasCycle(makeCycleList([]int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, -1)), false)
 
 	// Equal values do NOT mean a cycle (we compare nodes, not values).
-	check("equal values, no cycle", hasCycle(makeCycleList([]int{1, 1, 1, 1}, -1)), false)
+	check("equal values, no cycle", `hasCycle(makeCycleList([]int{1, 1, 1, 1}, -1))`,
+		hasCycle(makeCycleList([]int{1, 1, 1, 1}, -1)), false)
 
 	report()
 }
@@ -111,21 +121,38 @@ func makeCycleList(vals []int, pos int) *ListNode {
 // passed and failed count the test results.
 var passed, failed int
 
-// check compares the answer we got with the answer we want, and prints
-// PASS or FAIL for that test case.
-func check(name string, got interface{}, want interface{}) {
+// check runs one test case. It prints the input, the result we got and the
+// result we expected, with PASS or FAIL in front.
+//
+//	name:  a short description of the case
+//	input: the call we are testing, written as text so it can be printed
+//	got:   the answer the solution returned
+//	want:  the answer we expect
+func check(name string, input string, got interface{}, want interface{}) {
+	status := "PASS"
 	if fmt.Sprint(got) == fmt.Sprint(want) {
 		passed++
-		fmt.Printf("PASS  %s\n", name)
 	} else {
 		failed++
-		fmt.Printf("FAIL  %s\n      got:  %v\n      want: %v\n", name, got, want)
+		status = "FAIL"
 	}
+	fmt.Printf("%s  %s\n", status, name)
+	fmt.Printf("      input:    %s\n", input)
+	fmt.Printf("      result:   %s\n", show(got))
+	fmt.Printf("      expected: %s\n\n", show(want))
+}
+
+// show turns a value into text. Strings get quotes, so an empty string is visible.
+func show(value interface{}) string {
+	if text, ok := value.(string); ok {
+		return fmt.Sprintf("%q", text)
+	}
+	return fmt.Sprint(value)
 }
 
 // report prints the total. The program exits with an error if a test failed.
 func report() {
-	fmt.Printf("\n%d passed, %d failed\n", passed, failed)
+	fmt.Printf("%d passed, %d failed\n", passed, failed)
 	if failed > 0 {
 		os.Exit(1)
 	}

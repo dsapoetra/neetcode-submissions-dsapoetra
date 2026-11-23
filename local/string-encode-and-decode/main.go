@@ -66,32 +66,42 @@ func main() {
 	}
 
 	// What the encoded string looks like: <length>#<string> for every string.
-	check("encoded format", codec.Encode([]string{"neet", "code"}), "4#neet4#code")
+	check("encoded format", `codec.Encode([]string{"neet", "code"})`,
+		codec.Encode([]string{"neet", "code"}), "4#neet4#code")
 
 	// Example 1 from the problem.
-	check("example 1", roundTrip([]string{"neet", "code", "love", "you"}), `["neet" "code" "love" "you"]`)
+	check("example 1", `roundTrip([]string{"neet", "code", "love", "you"})`,
+		roundTrip([]string{"neet", "code", "love", "you"}), `["neet" "code" "love" "you"]`)
 
 	// Example 2 from the problem: a string with a special character.
-	check("example 2", roundTrip([]string{"we", "say", ":", "yes"}), `["we" "say" ":" "yes"]`)
+	check("example 2", `roundTrip([]string{"we", "say", ":", "yes"})`,
+		roundTrip([]string{"we", "say", ":", "yes"}), `["we" "say" ":" "yes"]`)
 
 	// An empty list.
-	check("empty list", roundTrip([]string{}), `[]`)
+	check("empty list", `roundTrip([]string{})`,
+		roundTrip([]string{}), `[]`)
 
 	// A list with one empty string is NOT the same as an empty list.
-	check("one empty string", roundTrip([]string{""}), `[""]`)
-	check("two empty strings", roundTrip([]string{"", ""}), `["" ""]`)
+	check("one empty string", `roundTrip([]string{""})`,
+		roundTrip([]string{""}), `[""]`)
+	check("two empty strings", `roundTrip([]string{"", ""})`,
+		roundTrip([]string{"", ""}), `["" ""]`)
 
 	// Tricky: the strings contain '#', the character we use as a separator.
-	check("strings with #", roundTrip([]string{"a#b", "#", "##"}), `["a#b" "#" "##"]`)
+	check("strings with #", `roundTrip([]string{"a#b", "#", "##"})`,
+		roundTrip([]string{"a#b", "#", "##"}), `["a#b" "#" "##"]`)
 
 	// Tricky: the strings contain digits, which could be mixed up with the length.
-	check("strings with digits", roundTrip([]string{"12", "3#4", "5"}), `["12" "3#4" "5"]`)
+	check("strings with digits", `roundTrip([]string{"12", "3#4", "5"})`,
+		roundTrip([]string{"12", "3#4", "5"}), `["12" "3#4" "5"]`)
 
 	// Spaces must survive.
-	check("strings with spaces", roundTrip([]string{"hello world", " "}), `["hello world" " "]`)
+	check("strings with spaces", `roundTrip([]string{"hello world", " "})`,
+		roundTrip([]string{"hello world", " "}), `["hello world" " "]`)
 
 	// A string longer than 9 characters has a length with two digits.
-	check("long string", roundTrip([]string{"abcdefghijklmnop"}), `["abcdefghijklmnop"]`)
+	check("long string", `roundTrip([]string{"abcdefghijklmnop"})`,
+		roundTrip([]string{"abcdefghijklmnop"}), `["abcdefghijklmnop"]`)
 
 	report()
 }
@@ -101,21 +111,38 @@ func main() {
 // passed and failed count the test results.
 var passed, failed int
 
-// check compares the answer we got with the answer we want, and prints
-// PASS or FAIL for that test case.
-func check(name string, got interface{}, want interface{}) {
+// check runs one test case. It prints the input, the result we got and the
+// result we expected, with PASS or FAIL in front.
+//
+//	name:  a short description of the case
+//	input: the call we are testing, written as text so it can be printed
+//	got:   the answer the solution returned
+//	want:  the answer we expect
+func check(name string, input string, got interface{}, want interface{}) {
+	status := "PASS"
 	if fmt.Sprint(got) == fmt.Sprint(want) {
 		passed++
-		fmt.Printf("PASS  %s\n", name)
 	} else {
 		failed++
-		fmt.Printf("FAIL  %s\n      got:  %v\n      want: %v\n", name, got, want)
+		status = "FAIL"
 	}
+	fmt.Printf("%s  %s\n", status, name)
+	fmt.Printf("      input:    %s\n", input)
+	fmt.Printf("      result:   %s\n", show(got))
+	fmt.Printf("      expected: %s\n\n", show(want))
+}
+
+// show turns a value into text. Strings get quotes, so an empty string is visible.
+func show(value interface{}) string {
+	if text, ok := value.(string); ok {
+		return fmt.Sprintf("%q", text)
+	}
+	return fmt.Sprint(value)
 }
 
 // report prints the total. The program exits with an error if a test failed.
 func report() {
-	fmt.Printf("\n%d passed, %d failed\n", passed, failed)
+	fmt.Printf("%d passed, %d failed\n", passed, failed)
 	if failed > 0 {
 		os.Exit(1)
 	}

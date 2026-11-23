@@ -47,31 +47,40 @@ func eraseOverlapIntervals(intervals [][]int) int {
 
 func main() {
 	// Example 1 from the problem: remove [1,4].
-	check("example 1", eraseOverlapIntervals([][]int{{1, 2}, {2, 4}, {1, 4}}), 1)
+	check("example 1", `eraseOverlapIntervals([][]int{{1, 2}, {2, 4}, {1, 4}})`,
+		eraseOverlapIntervals([][]int{{1, 2}, {2, 4}, {1, 4}}), 1)
 
 	// Example 2 from the problem: touching is not overlapping.
-	check("example 2: touching is fine", eraseOverlapIntervals([][]int{{1, 2}, {2, 4}}), 0)
+	check("example 2: touching is fine", `eraseOverlapIntervals([][]int{{1, 2}, {2, 4}})`,
+		eraseOverlapIntervals([][]int{{1, 2}, {2, 4}}), 0)
 
 	// One interval.
-	check("one interval", eraseOverlapIntervals([][]int{{1, 2}}), 0)
+	check("one interval", `eraseOverlapIntervals([][]int{{1, 2}})`,
+		eraseOverlapIntervals([][]int{{1, 2}}), 0)
 
 	// The same interval three times: keep one.
-	check("three copies", eraseOverlapIntervals([][]int{{1, 2}, {1, 2}, {1, 2}}), 2)
+	check("three copies", `eraseOverlapIntervals([][]int{{1, 2}, {1, 2}, {1, 2}})`,
+		eraseOverlapIntervals([][]int{{1, 2}, {1, 2}, {1, 2}}), 2)
 
 	// The classic example: remove [1,3].
-	check("classic", eraseOverlapIntervals([][]int{{1, 2}, {2, 3}, {3, 4}, {1, 3}}), 1)
+	check("classic", `eraseOverlapIntervals([][]int{{1, 2}, {2, 3}, {3, 4}, {1, 3}})`,
+		eraseOverlapIntervals([][]int{{1, 2}, {2, 3}, {3, 4}, {1, 3}}), 1)
 
 	// Tricky: keep [1,11] and [11,22], remove the other two.
-	check("one long interval", eraseOverlapIntervals([][]int{{1, 100}, {11, 22}, {1, 11}, {2, 12}}), 2)
+	check("one long interval", `eraseOverlapIntervals([][]int{{1, 100}, {11, 22}, {1, 11}, {2, 12}})`,
+		eraseOverlapIntervals([][]int{{1, 100}, {11, 22}, {1, 11}, {2, 12}}), 2)
 
 	// Removing the one long interval is better than removing three short ones.
-	check("remove the long one", eraseOverlapIntervals([][]int{{1, 10}, {2, 3}, {4, 5}, {6, 7}}), 1)
+	check("remove the long one", `eraseOverlapIntervals([][]int{{1, 10}, {2, 3}, {4, 5}, {6, 7}})`,
+		eraseOverlapIntervals([][]int{{1, 10}, {2, 3}, {4, 5}, {6, 7}}), 1)
 
 	// A staircase: keep every second interval.
-	check("staircase", eraseOverlapIntervals([][]int{{0, 2}, {1, 3}, {2, 4}, {3, 5}, {4, 6}}), 2)
+	check("staircase", `eraseOverlapIntervals([][]int{{0, 2}, {1, 3}, {2, 4}, {3, 5}, {4, 6}})`,
+		eraseOverlapIntervals([][]int{{0, 2}, {1, 3}, {2, 4}, {3, 5}, {4, 6}}), 2)
 
 	// Negative numbers.
-	check("negative numbers", eraseOverlapIntervals([][]int{{-5, 0}, {-1, 1}}), 1)
+	check("negative numbers", `eraseOverlapIntervals([][]int{{-5, 0}, {-1, 1}})`,
+		eraseOverlapIntervals([][]int{{-5, 0}, {-1, 1}}), 1)
 
 	report()
 }
@@ -81,21 +90,38 @@ func main() {
 // passed and failed count the test results.
 var passed, failed int
 
-// check compares the answer we got with the answer we want, and prints
-// PASS or FAIL for that test case.
-func check(name string, got interface{}, want interface{}) {
+// check runs one test case. It prints the input, the result we got and the
+// result we expected, with PASS or FAIL in front.
+//
+//	name:  a short description of the case
+//	input: the call we are testing, written as text so it can be printed
+//	got:   the answer the solution returned
+//	want:  the answer we expect
+func check(name string, input string, got interface{}, want interface{}) {
+	status := "PASS"
 	if fmt.Sprint(got) == fmt.Sprint(want) {
 		passed++
-		fmt.Printf("PASS  %s\n", name)
 	} else {
 		failed++
-		fmt.Printf("FAIL  %s\n      got:  %v\n      want: %v\n", name, got, want)
+		status = "FAIL"
 	}
+	fmt.Printf("%s  %s\n", status, name)
+	fmt.Printf("      input:    %s\n", input)
+	fmt.Printf("      result:   %s\n", show(got))
+	fmt.Printf("      expected: %s\n\n", show(want))
+}
+
+// show turns a value into text. Strings get quotes, so an empty string is visible.
+func show(value interface{}) string {
+	if text, ok := value.(string); ok {
+		return fmt.Sprintf("%q", text)
+	}
+	return fmt.Sprint(value)
 }
 
 // report prints the total. The program exits with an error if a test failed.
 func report() {
-	fmt.Printf("\n%d passed, %d failed\n", passed, failed)
+	fmt.Printf("%d passed, %d failed\n", passed, failed)
 	if failed > 0 {
 		os.Exit(1)
 	}

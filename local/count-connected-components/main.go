@@ -55,31 +55,40 @@ func visit(node int, neighbors [][]int, seen []bool) {
 
 func main() {
 	// Example 1 from the problem: everything is connected through node 0.
-	check("example 1", countComponents(3, [][]int{{0, 1}, {0, 2}}), 1)
+	check("example 1", `countComponents(3, [][]int{{0, 1}, {0, 2}})`,
+		countComponents(3, [][]int{{0, 1}, {0, 2}}), 1)
 
 	// Example 2 from the problem: {0,1,2,3} and {4,5}.
-	check("example 2", countComponents(6, [][]int{{0, 1}, {1, 2}, {2, 3}, {4, 5}}), 2)
+	check("example 2", `countComponents(6, [][]int{{0, 1}, {1, 2}, {2, 3}, {4, 5}})`,
+		countComponents(6, [][]int{{0, 1}, {1, 2}, {2, 3}, {4, 5}}), 2)
 
 	// One node.
-	check("one node", countComponents(1, [][]int{}), 1)
+	check("one node", `countComponents(1, [][]int{})`,
+		countComponents(1, [][]int{}), 1)
 
 	// No edges: every node is its own component.
-	check("no edges", countComponents(4, [][]int{}), 4)
+	check("no edges", `countComponents(4, [][]int{})`,
+		countComponents(4, [][]int{}), 4)
 
 	// The classic example: {0,1,2} and {3,4}.
-	check("classic", countComponents(5, [][]int{{0, 1}, {1, 2}, {3, 4}}), 2)
+	check("classic", `countComponents(5, [][]int{{0, 1}, {1, 2}, {3, 4}})`,
+		countComponents(5, [][]int{{0, 1}, {1, 2}, {3, 4}}), 2)
 
 	// A cycle is still one component.
-	check("cycle", countComponents(3, [][]int{{0, 1}, {1, 2}, {2, 0}}), 1)
+	check("cycle", `countComponents(3, [][]int{{0, 1}, {1, 2}, {2, 0}})`,
+		countComponents(3, [][]int{{0, 1}, {1, 2}, {2, 0}}), 1)
 
 	// Two pairs and one node alone.
-	check("two pairs and a single", countComponents(5, [][]int{{0, 1}, {2, 3}}), 3)
+	check("two pairs and a single", `countComponents(5, [][]int{{0, 1}, {2, 3}})`,
+		countComponents(5, [][]int{{0, 1}, {2, 3}}), 3)
 
 	// Two nodes, one edge.
-	check("two nodes", countComponents(2, [][]int{{0, 1}}), 1)
+	check("two nodes", `countComponents(2, [][]int{{0, 1}})`,
+		countComponents(2, [][]int{{0, 1}}), 1)
 
 	// The edges are given "backwards" (bigger node first).
-	check("edges backwards", countComponents(4, [][]int{{3, 2}, {1, 0}}), 2)
+	check("edges backwards", `countComponents(4, [][]int{{3, 2}, {1, 0}})`,
+		countComponents(4, [][]int{{3, 2}, {1, 0}}), 2)
 
 	report()
 }
@@ -89,21 +98,38 @@ func main() {
 // passed and failed count the test results.
 var passed, failed int
 
-// check compares the answer we got with the answer we want, and prints
-// PASS or FAIL for that test case.
-func check(name string, got interface{}, want interface{}) {
+// check runs one test case. It prints the input, the result we got and the
+// result we expected, with PASS or FAIL in front.
+//
+//	name:  a short description of the case
+//	input: the call we are testing, written as text so it can be printed
+//	got:   the answer the solution returned
+//	want:  the answer we expect
+func check(name string, input string, got interface{}, want interface{}) {
+	status := "PASS"
 	if fmt.Sprint(got) == fmt.Sprint(want) {
 		passed++
-		fmt.Printf("PASS  %s\n", name)
 	} else {
 		failed++
-		fmt.Printf("FAIL  %s\n      got:  %v\n      want: %v\n", name, got, want)
+		status = "FAIL"
 	}
+	fmt.Printf("%s  %s\n", status, name)
+	fmt.Printf("      input:    %s\n", input)
+	fmt.Printf("      result:   %s\n", show(got))
+	fmt.Printf("      expected: %s\n\n", show(want))
+}
+
+// show turns a value into text. Strings get quotes, so an empty string is visible.
+func show(value interface{}) string {
+	if text, ok := value.(string); ok {
+		return fmt.Sprintf("%q", text)
+	}
+	return fmt.Sprint(value)
 }
 
 // report prints the total. The program exits with an error if a test failed.
 func report() {
-	fmt.Printf("\n%d passed, %d failed\n", passed, failed)
+	fmt.Printf("%d passed, %d failed\n", passed, failed)
 	if failed > 0 {
 		os.Exit(1)
 	}

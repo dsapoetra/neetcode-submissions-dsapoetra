@@ -47,28 +47,36 @@ func maxDepth(root *TreeNode) int {
 
 func main() {
 	// Example 1 from the problem: 1 -> 3 -> 4.
-	check("example 1", maxDepth(makeTree(1, 2, 3, nil, nil, 4)), 3)
+	check("example 1", `maxDepth(makeTree(1, 2, 3, nil, nil, 4))`,
+		maxDepth(makeTree(1, 2, 3, nil, nil, 4)), 3)
 
 	// Example 2 from the problem: an empty tree.
-	check("example 2: empty tree", maxDepth(makeTree()), 0)
+	check("example 2: empty tree", `maxDepth(makeTree())`,
+		maxDepth(makeTree()), 0)
 
 	// One node.
-	check("one node", maxDepth(makeTree(1)), 1)
+	check("one node", `maxDepth(makeTree(1))`,
+		maxDepth(makeTree(1)), 1)
 
 	// A chain going left.
-	check("left chain", maxDepth(makeTree(1, 2, nil, 3)), 3)
+	check("left chain", `maxDepth(makeTree(1, 2, nil, 3))`,
+		maxDepth(makeTree(1, 2, nil, 3)), 3)
 
 	// A chain going right.
-	check("right chain", maxDepth(makeTree(1, nil, 2, nil, 3, nil, 4)), 4)
+	check("right chain", `maxDepth(makeTree(1, nil, 2, nil, 3, nil, 4))`,
+		maxDepth(makeTree(1, nil, 2, nil, 3, nil, 4)), 4)
 
 	// The classic example.
-	check("classic", maxDepth(makeTree(3, 9, 20, nil, nil, 15, 7)), 3)
+	check("classic", `maxDepth(makeTree(3, 9, 20, nil, nil, 15, 7))`,
+		maxDepth(makeTree(3, 9, 20, nil, nil, 15, 7)), 3)
 
 	// A full tree with 3 levels.
-	check("full tree", maxDepth(makeTree(1, 2, 3, 4, 5, 6, 7)), 3)
+	check("full tree", `maxDepth(makeTree(1, 2, 3, 4, 5, 6, 7))`,
+		maxDepth(makeTree(1, 2, 3, 4, 5, 6, 7)), 3)
 
 	// The left side is much deeper than the right side.
-	check("deep left side", maxDepth(makeTree(1, 2, 3, 4, nil, nil, nil, 5)), 4)
+	check("deep left side", `maxDepth(makeTree(1, 2, 3, 4, nil, nil, nil, 5))`,
+		maxDepth(makeTree(1, 2, 3, 4, nil, nil, nil, 5)), 4)
 
 	report()
 }
@@ -115,21 +123,38 @@ func makeTree(vals ...interface{}) *TreeNode {
 // passed and failed count the test results.
 var passed, failed int
 
-// check compares the answer we got with the answer we want, and prints
-// PASS or FAIL for that test case.
-func check(name string, got interface{}, want interface{}) {
+// check runs one test case. It prints the input, the result we got and the
+// result we expected, with PASS or FAIL in front.
+//
+//	name:  a short description of the case
+//	input: the call we are testing, written as text so it can be printed
+//	got:   the answer the solution returned
+//	want:  the answer we expect
+func check(name string, input string, got interface{}, want interface{}) {
+	status := "PASS"
 	if fmt.Sprint(got) == fmt.Sprint(want) {
 		passed++
-		fmt.Printf("PASS  %s\n", name)
 	} else {
 		failed++
-		fmt.Printf("FAIL  %s\n      got:  %v\n      want: %v\n", name, got, want)
+		status = "FAIL"
 	}
+	fmt.Printf("%s  %s\n", status, name)
+	fmt.Printf("      input:    %s\n", input)
+	fmt.Printf("      result:   %s\n", show(got))
+	fmt.Printf("      expected: %s\n\n", show(want))
+}
+
+// show turns a value into text. Strings get quotes, so an empty string is visible.
+func show(value interface{}) string {
+	if text, ok := value.(string); ok {
+		return fmt.Sprintf("%q", text)
+	}
+	return fmt.Sprint(value)
 }
 
 // report prints the total. The program exits with an error if a test failed.
 func report() {
-	fmt.Printf("\n%d passed, %d failed\n", passed, failed)
+	fmt.Printf("%d passed, %d failed\n", passed, failed)
 	if failed > 0 {
 		os.Exit(1)
 	}

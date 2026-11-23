@@ -50,37 +50,48 @@ func lengthOfLongestSubstring(s string) int {
 
 func main() {
 	// Example 1 from the problem: "xyz" (or "zxy", "yzx").
-	check("example 1", lengthOfLongestSubstring("zxyzxyz"), 3)
+	check("example 1", `lengthOfLongestSubstring("zxyzxyz")`,
+		lengthOfLongestSubstring("zxyzxyz"), 3)
 
 	// Example 2 from the problem: every letter is the same.
-	check("example 2: all the same", lengthOfLongestSubstring("xxxx"), 1)
+	check("example 2: all the same", `lengthOfLongestSubstring("xxxx")`,
+		lengthOfLongestSubstring("xxxx"), 1)
 
 	// Empty string.
-	check("empty string", lengthOfLongestSubstring(""), 0)
+	check("empty string", `lengthOfLongestSubstring("")`,
+		lengthOfLongestSubstring(""), 0)
 
 	// One letter.
-	check("one letter", lengthOfLongestSubstring("a"), 1)
+	check("one letter", `lengthOfLongestSubstring("a")`,
+		lengthOfLongestSubstring("a"), 1)
 
 	// The classic example: "abc".
-	check("classic abcabcbb", lengthOfLongestSubstring("abcabcbb"), 3)
+	check("classic abcabcbb", `lengthOfLongestSubstring("abcabcbb")`,
+		lengthOfLongestSubstring("abcabcbb"), 3)
 
 	// "wke" - note "pwke" is not a substring (letters must be next to each other).
-	check("classic pwwkew", lengthOfLongestSubstring("pwwkew"), 3)
+	check("classic pwwkew", `lengthOfLongestSubstring("pwwkew")`,
+		lengthOfLongestSubstring("pwwkew"), 3)
 
 	// No letter repeats: the whole string.
-	check("no repeats", lengthOfLongestSubstring("abcdef"), 6)
+	check("no repeats", `lengthOfLongestSubstring("abcdef")`,
+		lengthOfLongestSubstring("abcdef"), 6)
 
 	// Tricky: after "abb" the left side must NOT jump back to the old 'a'.
-	check("abba", lengthOfLongestSubstring("abba"), 2)
+	check("abba", `lengthOfLongestSubstring("abba")`,
+		lengthOfLongestSubstring("abba"), 2)
 
 	// Tricky: the best window "vdf" starts in the middle.
-	check("dvdf", lengthOfLongestSubstring("dvdf"), 3)
+	check("dvdf", `lengthOfLongestSubstring("dvdf")`,
+		lengthOfLongestSubstring("dvdf"), 3)
 
 	// A space is a character like any other.
-	check("with spaces", lengthOfLongestSubstring("a b c"), 3)
+	check("with spaces", `lengthOfLongestSubstring("a b c")`,
+		lengthOfLongestSubstring("a b c"), 3)
 
 	// "mzuxt" is the longest.
-	check("tmmzuxt", lengthOfLongestSubstring("tmmzuxt"), 5)
+	check("tmmzuxt", `lengthOfLongestSubstring("tmmzuxt")`,
+		lengthOfLongestSubstring("tmmzuxt"), 5)
 
 	report()
 }
@@ -90,21 +101,38 @@ func main() {
 // passed and failed count the test results.
 var passed, failed int
 
-// check compares the answer we got with the answer we want, and prints
-// PASS or FAIL for that test case.
-func check(name string, got interface{}, want interface{}) {
+// check runs one test case. It prints the input, the result we got and the
+// result we expected, with PASS or FAIL in front.
+//
+//	name:  a short description of the case
+//	input: the call we are testing, written as text so it can be printed
+//	got:   the answer the solution returned
+//	want:  the answer we expect
+func check(name string, input string, got interface{}, want interface{}) {
+	status := "PASS"
 	if fmt.Sprint(got) == fmt.Sprint(want) {
 		passed++
-		fmt.Printf("PASS  %s\n", name)
 	} else {
 		failed++
-		fmt.Printf("FAIL  %s\n      got:  %v\n      want: %v\n", name, got, want)
+		status = "FAIL"
 	}
+	fmt.Printf("%s  %s\n", status, name)
+	fmt.Printf("      input:    %s\n", input)
+	fmt.Printf("      result:   %s\n", show(got))
+	fmt.Printf("      expected: %s\n\n", show(want))
+}
+
+// show turns a value into text. Strings get quotes, so an empty string is visible.
+func show(value interface{}) string {
+	if text, ok := value.(string); ok {
+		return fmt.Sprintf("%q", text)
+	}
+	return fmt.Sprint(value)
 }
 
 // report prints the total. The program exits with an error if a test failed.
 func report() {
-	fmt.Printf("\n%d passed, %d failed\n", passed, failed)
+	fmt.Printf("%d passed, %d failed\n", passed, failed)
 	if failed > 0 {
 		os.Exit(1)
 	}

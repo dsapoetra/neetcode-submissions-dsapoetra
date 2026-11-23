@@ -85,43 +85,63 @@ func searchNode(node *wordNode, word string, index int) bool {
 // ===================== Test cases =====================
 
 func main() {
-	// Example from the problem.
+	// The dictionary remembers what was added before, so the lines starting
+	// with "--" show every AddWord in the output.
 	dict := Constructor()
+
+	// Example from the problem.
 	dict.AddWord("day")
 	dict.AddWord("bay")
 	dict.AddWord("may")
-	check("word that was never added", dict.Search("say"), false)
-	check("word that was added", dict.Search("day"), true)
-	check("dot as first letter", dict.Search(".ay"), true)
-	check("two dots", dict.Search("b.."), true)
+	fmt.Println(`-- dict.AddWord("day"), dict.AddWord("bay"), dict.AddWord("may")`)
+	check("word that was never added", `dict.Search("say")`,
+		dict.Search("say"), false)
+	check("word that was added", `dict.Search("day")`,
+		dict.Search("day"), true)
+	check("dot as first letter", `dict.Search(".ay")`,
+		dict.Search(".ay"), true)
+	check("two dots", `dict.Search("b..")`,
+		dict.Search("b.."), true)
 
 	// A dot in the middle.
-	check("dot in the middle", dict.Search("d.y"), true)
+	check("dot in the middle", `dict.Search("d.y")`,
+		dict.Search("d.y"), true)
 
 	// Only dots: any 3-letter word matches.
-	check("three dots", dict.Search("..."), true)
+	check("three dots", `dict.Search("...")`,
+		dict.Search("..."), true)
 
 	// Only dots, but no word has 4 letters.
-	check("four dots", dict.Search("...."), false)
+	check("four dots", `dict.Search("....")`,
+		dict.Search("...."), false)
 
 	// Only dots, but no word has 2 letters.
-	check("two dots only", dict.Search(".."), false)
+	check("two dots only", `dict.Search("..")`,
+		dict.Search(".."), false)
 
 	// "da" is only the beginning of "day", not a whole word.
-	check("prefix is not a word", dict.Search("da"), false)
+	check("prefix is not a word", `dict.Search("da")`,
+		dict.Search("da"), false)
 
 	// The dot matches, but the last letter does not.
-	check("dot matches, rest does not", dict.Search(".ax"), false)
+	check("dot matches, rest does not", `dict.Search(".ax")`,
+		dict.Search(".ax"), false)
 
 	// Add a one-letter word.
 	dict.AddWord("a")
-	check("one-letter word", dict.Search("a"), true)
-	check("one dot", dict.Search("."), true)
-	check("other one-letter word", dict.Search("b"), false)
+	fmt.Println(`-- dict.AddWord("a")`)
+	check("one-letter word", `dict.Search("a")`,
+		dict.Search("a"), true)
+	check("one dot", `dict.Search(".")`,
+		dict.Search("."), true)
+	check("other one-letter word", `dict.Search("b")`,
+		dict.Search("b"), false)
 
 	// A new dictionary is empty.
 	empty := Constructor()
-	check("fresh dictionary is empty", empty.Search("."), false)
+	fmt.Println(`-- empty := Constructor()   (a new, empty dictionary)`)
+	check("fresh dictionary is empty", `empty.Search(".")`,
+		empty.Search("."), false)
 
 	report()
 }
@@ -131,21 +151,38 @@ func main() {
 // passed and failed count the test results.
 var passed, failed int
 
-// check compares the answer we got with the answer we want, and prints
-// PASS or FAIL for that test case.
-func check(name string, got interface{}, want interface{}) {
+// check runs one test case. It prints the input, the result we got and the
+// result we expected, with PASS or FAIL in front.
+//
+//	name:  a short description of the case
+//	input: the call we are testing, written as text so it can be printed
+//	got:   the answer the solution returned
+//	want:  the answer we expect
+func check(name string, input string, got interface{}, want interface{}) {
+	status := "PASS"
 	if fmt.Sprint(got) == fmt.Sprint(want) {
 		passed++
-		fmt.Printf("PASS  %s\n", name)
 	} else {
 		failed++
-		fmt.Printf("FAIL  %s\n      got:  %v\n      want: %v\n", name, got, want)
+		status = "FAIL"
 	}
+	fmt.Printf("%s  %s\n", status, name)
+	fmt.Printf("      input:    %s\n", input)
+	fmt.Printf("      result:   %s\n", show(got))
+	fmt.Printf("      expected: %s\n\n", show(want))
+}
+
+// show turns a value into text. Strings get quotes, so an empty string is visible.
+func show(value interface{}) string {
+	if text, ok := value.(string); ok {
+		return fmt.Sprintf("%q", text)
+	}
+	return fmt.Sprint(value)
 }
 
 // report prints the total. The program exits with an error if a test failed.
 func report() {
-	fmt.Printf("\n%d passed, %d failed\n", passed, failed)
+	fmt.Printf("%d passed, %d failed\n", passed, failed)
 	if failed > 0 {
 		os.Exit(1)
 	}

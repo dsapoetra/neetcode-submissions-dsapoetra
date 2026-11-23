@@ -59,50 +59,62 @@ func cloneNode(node *Node, copies map[*Node]*Node) *Node {
 // ===================== Test cases =====================
 
 func main() {
-	// buildGraph takes a neighbor list: entry 0 is the neighbors of node 1,
-	// entry 1 the neighbors of node 2, and so on.
-	// For every graph we check two things:
-	//   1) the clone has the same shape as the original
-	//   2) the clone is made of NEW nodes (it shares none with the original)
+	// A graph is written as a neighbor list: entry 0 is the neighbors of
+	// node 1, entry 1 the neighbors of node 2, and so on.
+	// For every graph we check two things with these two shortcuts:
+
+	// cloneShape builds the graph, clones it, and returns the neighbor list
+	// of the CLONE. It must be the same as the neighbor list we started with.
+	cloneShape := func(adj [][]int) [][]int {
+		return graphAdj(cloneGraph(buildGraph(adj)))
+	}
+
+	// cloneIsNew builds the graph, clones it, and returns true if the clone
+	// is made of NEW nodes (it shares no node with the original).
+	cloneIsNew := func(adj [][]int) bool {
+		original := buildGraph(adj)
+		return !sharesNodes(original, cloneGraph(original))
+	}
 
 	// Example 1 from the problem: 1 - 2 - 3 in a line.
-	original := buildGraph([][]int{{2}, {1, 3}, {2}})
-	clone := cloneGraph(original)
-	check("example 1: same shape", graphAdj(clone), [][]int{{2}, {1, 3}, {2}})
-	check("example 1: new nodes", sharesNodes(original, clone), false)
+	check("example 1: same shape", `cloneShape([][]int{{2}, {1, 3}, {2}})`,
+		cloneShape([][]int{{2}, {1, 3}, {2}}), [][]int{{2}, {1, 3}, {2}})
+	check("example 1: new nodes", `cloneIsNew([][]int{{2}, {1, 3}, {2}})`,
+		cloneIsNew([][]int{{2}, {1, 3}, {2}}), true)
 
 	// Example 2 from the problem: one node without neighbors.
-	original = buildGraph([][]int{{}})
-	clone = cloneGraph(original)
-	check("example 2: single node, same shape", graphAdj(clone), [][]int{{}})
-	check("example 2: single node, new node", sharesNodes(original, clone), false)
+	check("example 2: single node, same shape", `cloneShape([][]int{{}})`,
+		cloneShape([][]int{{}}), [][]int{{}})
+	check("example 2: single node, new node", `cloneIsNew([][]int{{}})`,
+		cloneIsNew([][]int{{}}), true)
 
 	// Example 3 from the problem: an empty graph stays empty.
-	check("example 3: empty graph", cloneGraph(nil) == nil, true)
+	check("example 3: empty graph", `cloneGraph(nil) == nil`,
+		cloneGraph(nil) == nil, true)
 
 	// Two nodes pointing at each other.
-	original = buildGraph([][]int{{2}, {1}})
-	clone = cloneGraph(original)
-	check("two nodes: same shape", graphAdj(clone), [][]int{{2}, {1}})
-	check("two nodes: new nodes", sharesNodes(original, clone), false)
+	check("two nodes: same shape", `cloneShape([][]int{{2}, {1}})`,
+		cloneShape([][]int{{2}, {1}}), [][]int{{2}, {1}})
+	check("two nodes: new nodes", `cloneIsNew([][]int{{2}, {1}})`,
+		cloneIsNew([][]int{{2}, {1}}), true)
 
 	// A square (a cycle of 4). The DFS must not loop forever.
-	original = buildGraph([][]int{{2, 4}, {1, 3}, {2, 4}, {1, 3}})
-	clone = cloneGraph(original)
-	check("square: same shape", graphAdj(clone), [][]int{{2, 4}, {1, 3}, {2, 4}, {1, 3}})
-	check("square: new nodes", sharesNodes(original, clone), false)
+	check("square: same shape", `cloneShape([][]int{{2, 4}, {1, 3}, {2, 4}, {1, 3}})`,
+		cloneShape([][]int{{2, 4}, {1, 3}, {2, 4}, {1, 3}}), [][]int{{2, 4}, {1, 3}, {2, 4}, {1, 3}})
+	check("square: new nodes", `cloneIsNew([][]int{{2, 4}, {1, 3}, {2, 4}, {1, 3}})`,
+		cloneIsNew([][]int{{2, 4}, {1, 3}, {2, 4}, {1, 3}}), true)
 
 	// Every node is connected to every other node.
-	original = buildGraph([][]int{{2, 3}, {1, 3}, {1, 2}})
-	clone = cloneGraph(original)
-	check("triangle: same shape", graphAdj(clone), [][]int{{2, 3}, {1, 3}, {1, 2}})
-	check("triangle: new nodes", sharesNodes(original, clone), false)
+	check("triangle: same shape", `cloneShape([][]int{{2, 3}, {1, 3}, {1, 2}})`,
+		cloneShape([][]int{{2, 3}, {1, 3}, {1, 2}}), [][]int{{2, 3}, {1, 3}, {1, 2}})
+	check("triangle: new nodes", `cloneIsNew([][]int{{2, 3}, {1, 3}, {1, 2}})`,
+		cloneIsNew([][]int{{2, 3}, {1, 3}, {1, 2}}), true)
 
 	// A node that is its own neighbor.
-	original = buildGraph([][]int{{1}})
-	clone = cloneGraph(original)
-	check("self loop: same shape", graphAdj(clone), [][]int{{1}})
-	check("self loop: new node", sharesNodes(original, clone), false)
+	check("self loop: same shape", `cloneShape([][]int{{1}})`,
+		cloneShape([][]int{{1}}), [][]int{{1}})
+	check("self loop: new node", `cloneIsNew([][]int{{1}})`,
+		cloneIsNew([][]int{{1}}), true)
 
 	report()
 }
@@ -179,21 +191,38 @@ func sharesNodes(a *Node, b *Node) bool {
 // passed and failed count the test results.
 var passed, failed int
 
-// check compares the answer we got with the answer we want, and prints
-// PASS or FAIL for that test case.
-func check(name string, got interface{}, want interface{}) {
+// check runs one test case. It prints the input, the result we got and the
+// result we expected, with PASS or FAIL in front.
+//
+//	name:  a short description of the case
+//	input: the call we are testing, written as text so it can be printed
+//	got:   the answer the solution returned
+//	want:  the answer we expect
+func check(name string, input string, got interface{}, want interface{}) {
+	status := "PASS"
 	if fmt.Sprint(got) == fmt.Sprint(want) {
 		passed++
-		fmt.Printf("PASS  %s\n", name)
 	} else {
 		failed++
-		fmt.Printf("FAIL  %s\n      got:  %v\n      want: %v\n", name, got, want)
+		status = "FAIL"
 	}
+	fmt.Printf("%s  %s\n", status, name)
+	fmt.Printf("      input:    %s\n", input)
+	fmt.Printf("      result:   %s\n", show(got))
+	fmt.Printf("      expected: %s\n\n", show(want))
+}
+
+// show turns a value into text. Strings get quotes, so an empty string is visible.
+func show(value interface{}) string {
+	if text, ok := value.(string); ok {
+		return fmt.Sprintf("%q", text)
+	}
+	return fmt.Sprint(value)
 }
 
 // report prints the total. The program exits with an error if a test failed.
 func report() {
-	fmt.Printf("\n%d passed, %d failed\n", passed, failed)
+	fmt.Printf("%d passed, %d failed\n", passed, failed)
 	if failed > 0 {
 		os.Exit(1)
 	}

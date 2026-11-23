@@ -72,34 +72,44 @@ func maxPathSum(root *TreeNode) int {
 
 func main() {
 	// Example 1 from the problem: 2 -> 1 -> 3.
-	check("example 1", maxPathSum(makeTree(1, 2, 3)), 6)
+	check("example 1", `maxPathSum(makeTree(1, 2, 3))`,
+		maxPathSum(makeTree(1, 2, 3)), 6)
 
 	// Example 2 from the problem: 15 -> 20 -> 5. The path does not use the root.
-	check("example 2: path below the root", maxPathSum(makeTree(-15, 10, 20, nil, nil, 15, 5, -5)), 40)
+	check("example 2: path below the root", `maxPathSum(makeTree(-15, 10, 20, nil, nil, 15, 5, -5))`,
+		maxPathSum(makeTree(-15, 10, 20, nil, nil, 15, 5, -5)), 40)
 
 	// One node.
-	check("one node", maxPathSum(makeTree(5)), 5)
+	check("one node", `maxPathSum(makeTree(5))`,
+		maxPathSum(makeTree(5)), 5)
 
 	// One negative node: the path must have at least one node.
-	check("one negative node", maxPathSum(makeTree(-3)), -3)
+	check("one negative node", `maxPathSum(makeTree(-3))`,
+		maxPathSum(makeTree(-3)), -3)
 
 	// All negative: the best path is the single biggest node.
-	check("all negative", maxPathSum(makeTree(-2, -1)), -1)
+	check("all negative", `maxPathSum(makeTree(-2, -1))`,
+		maxPathSum(makeTree(-2, -1)), -1)
 
 	// The classic example: 15 -> 20 -> 7.
-	check("classic", maxPathSum(makeTree(-10, 9, 20, nil, nil, 15, 7)), 42)
+	check("classic", `maxPathSum(makeTree(-10, 9, 20, nil, nil, 15, 7))`,
+		maxPathSum(makeTree(-10, 9, 20, nil, nil, 15, 7)), 42)
 
 	// A negative child is left out.
-	check("skip a negative child", maxPathSum(makeTree(2, -1)), 2)
+	check("skip a negative child", `maxPathSum(makeTree(2, -1))`,
+		maxPathSum(makeTree(2, -1)), 2)
 
 	// Skip the negative left child, take root + right.
-	check("skip one side", maxPathSum(makeTree(1, -2, 3)), 4)
+	check("skip one side", `maxPathSum(makeTree(1, -2, 3))`,
+		maxPathSum(makeTree(1, -2, 3)), 4)
 
 	// A chain: the path can go straight down.
-	check("chain", maxPathSum(makeTree(1, 2, nil, 3)), 6)
+	check("chain", `maxPathSum(makeTree(1, 2, nil, 3))`,
+		maxPathSum(makeTree(1, 2, nil, 3)), 6)
 
 	// A negative node in the middle is still worth passing through: 10 -> -1 -> 10.
-	check("through a negative node", maxPathSum(makeTree(-1, 10, 10)), 19)
+	check("through a negative node", `maxPathSum(makeTree(-1, 10, 10))`,
+		maxPathSum(makeTree(-1, 10, 10)), 19)
 
 	report()
 }
@@ -146,21 +156,38 @@ func makeTree(vals ...interface{}) *TreeNode {
 // passed and failed count the test results.
 var passed, failed int
 
-// check compares the answer we got with the answer we want, and prints
-// PASS or FAIL for that test case.
-func check(name string, got interface{}, want interface{}) {
+// check runs one test case. It prints the input, the result we got and the
+// result we expected, with PASS or FAIL in front.
+//
+//	name:  a short description of the case
+//	input: the call we are testing, written as text so it can be printed
+//	got:   the answer the solution returned
+//	want:  the answer we expect
+func check(name string, input string, got interface{}, want interface{}) {
+	status := "PASS"
 	if fmt.Sprint(got) == fmt.Sprint(want) {
 		passed++
-		fmt.Printf("PASS  %s\n", name)
 	} else {
 		failed++
-		fmt.Printf("FAIL  %s\n      got:  %v\n      want: %v\n", name, got, want)
+		status = "FAIL"
 	}
+	fmt.Printf("%s  %s\n", status, name)
+	fmt.Printf("      input:    %s\n", input)
+	fmt.Printf("      result:   %s\n", show(got))
+	fmt.Printf("      expected: %s\n\n", show(want))
+}
+
+// show turns a value into text. Strings get quotes, so an empty string is visible.
+func show(value interface{}) string {
+	if text, ok := value.(string); ok {
+		return fmt.Sprintf("%q", text)
+	}
+	return fmt.Sprint(value)
 }
 
 // report prints the total. The program exits with an error if a test failed.
 func report() {
-	fmt.Printf("\n%d passed, %d failed\n", passed, failed)
+	fmt.Printf("%d passed, %d failed\n", passed, failed)
 	if failed > 0 {
 		os.Exit(1)
 	}

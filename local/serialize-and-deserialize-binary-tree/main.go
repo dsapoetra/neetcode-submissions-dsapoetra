@@ -89,33 +89,44 @@ func main() {
 	}
 
 	// What the serialized string looks like: preorder, "N" for an empty child.
-	check("serialized format", codec.serialize(makeTree(1, 2, 3)), "1,2,N,N,3,N,N")
-	check("serialized empty tree", codec.serialize(makeTree()), "N")
+	check("serialized format", `codec.serialize(makeTree(1, 2, 3))`,
+		codec.serialize(makeTree(1, 2, 3)), "1,2,N,N,3,N,N")
+	check("serialized empty tree", `codec.serialize(makeTree())`,
+		codec.serialize(makeTree()), "N")
 
 	// Example 1 from the problem.
-	check("example 1", roundTrip(1, 2, 3, nil, nil, 4, 5), "[1,2,3,null,null,4,5]")
+	check("example 1", `roundTrip(1, 2, 3, nil, nil, 4, 5)`,
+		roundTrip(1, 2, 3, nil, nil, 4, 5), "[1,2,3,null,null,4,5]")
 
 	// Example 2 from the problem: an empty tree.
-	check("example 2: empty tree", roundTrip(), "[]")
+	check("example 2: empty tree", `roundTrip()`,
+		roundTrip(), "[]")
 
 	// One node.
-	check("one node", roundTrip(1), "[1]")
+	check("one node", `roundTrip(1)`,
+		roundTrip(1), "[1]")
 
 	// Only a left child / only a right child must not be mixed up.
-	check("left child only", roundTrip(1, 2), "[1,2]")
-	check("right child only", roundTrip(1, nil, 2), "[1,null,2]")
+	check("left child only", `roundTrip(1, 2)`,
+		roundTrip(1, 2), "[1,2]")
+	check("right child only", `roundTrip(1, nil, 2)`,
+		roundTrip(1, nil, 2), "[1,null,2]")
 
 	// Negative values (the "-" must survive).
-	check("negative values", roundTrip(-1, -2, -3), "[-1,-2,-3]")
+	check("negative values", `roundTrip(-1, -2, -3)`,
+		roundTrip(-1, -2, -3), "[-1,-2,-3]")
 
 	// A chain going left.
-	check("left chain", roundTrip(1, 2, nil, 3, nil, 4), "[1,2,null,3,null,4]")
+	check("left chain", `roundTrip(1, 2, nil, 3, nil, 4)`,
+		roundTrip(1, 2, nil, 3, nil, 4), "[1,2,null,3,null,4]")
 
 	// Equal values.
-	check("equal values", roundTrip(1, 1, 1), "[1,1,1]")
+	check("equal values", `roundTrip(1, 1, 1)`,
+		roundTrip(1, 1, 1), "[1,1,1]")
 
 	// Values with several digits.
-	check("big values", roundTrip(1000, -1000, 999), "[1000,-1000,999]")
+	check("big values", `roundTrip(1000, -1000, 999)`,
+		roundTrip(1000, -1000, 999), "[1000,-1000,999]")
 
 	report()
 }
@@ -184,21 +195,38 @@ func treeString(root *TreeNode) string {
 // passed and failed count the test results.
 var passed, failed int
 
-// check compares the answer we got with the answer we want, and prints
-// PASS or FAIL for that test case.
-func check(name string, got interface{}, want interface{}) {
+// check runs one test case. It prints the input, the result we got and the
+// result we expected, with PASS or FAIL in front.
+//
+//	name:  a short description of the case
+//	input: the call we are testing, written as text so it can be printed
+//	got:   the answer the solution returned
+//	want:  the answer we expect
+func check(name string, input string, got interface{}, want interface{}) {
+	status := "PASS"
 	if fmt.Sprint(got) == fmt.Sprint(want) {
 		passed++
-		fmt.Printf("PASS  %s\n", name)
 	} else {
 		failed++
-		fmt.Printf("FAIL  %s\n      got:  %v\n      want: %v\n", name, got, want)
+		status = "FAIL"
 	}
+	fmt.Printf("%s  %s\n", status, name)
+	fmt.Printf("      input:    %s\n", input)
+	fmt.Printf("      result:   %s\n", show(got))
+	fmt.Printf("      expected: %s\n\n", show(want))
+}
+
+// show turns a value into text. Strings get quotes, so an empty string is visible.
+func show(value interface{}) string {
+	if text, ok := value.(string); ok {
+		return fmt.Sprintf("%q", text)
+	}
+	return fmt.Sprint(value)
 }
 
 // report prints the total. The program exits with an error if a test failed.
 func report() {
-	fmt.Printf("\n%d passed, %d failed\n", passed, failed)
+	fmt.Printf("%d passed, %d failed\n", passed, failed)
 	if failed > 0 {
 		os.Exit(1)
 	}

@@ -53,31 +53,40 @@ func merge(intervals [][]int) [][]int {
 
 func main() {
 	// Example 1 from the problem.
-	check("example 1", merge([][]int{{1, 3}, {1, 5}, {6, 7}}), [][]int{{1, 5}, {6, 7}})
+	check("example 1", `merge([][]int{{1, 3}, {1, 5}, {6, 7}})`,
+		merge([][]int{{1, 3}, {1, 5}, {6, 7}}), [][]int{{1, 5}, {6, 7}})
 
 	// Example 2 from the problem: touching intervals are merged.
-	check("example 2: touching", merge([][]int{{1, 2}, {2, 3}}), [][]int{{1, 3}})
+	check("example 2: touching", `merge([][]int{{1, 2}, {2, 3}})`,
+		merge([][]int{{1, 2}, {2, 3}}), [][]int{{1, 3}})
 
 	// One interval: nothing to merge.
-	check("one interval", merge([][]int{{1, 5}}), [][]int{{1, 5}})
+	check("one interval", `merge([][]int{{1, 5}})`,
+		merge([][]int{{1, 5}}), [][]int{{1, 5}})
 
 	// The classic example.
-	check("classic", merge([][]int{{1, 3}, {2, 6}, {8, 10}, {15, 18}}), [][]int{{1, 6}, {8, 10}, {15, 18}})
+	check("classic", `merge([][]int{{1, 3}, {2, 6}, {8, 10}, {15, 18}})`,
+		merge([][]int{{1, 3}, {2, 6}, {8, 10}, {15, 18}}), [][]int{{1, 6}, {8, 10}, {15, 18}})
 
 	// The input is not sorted.
-	check("unsorted input", merge([][]int{{8, 10}, {1, 3}, {2, 6}}), [][]int{{1, 6}, {8, 10}})
+	check("unsorted input", `merge([][]int{{8, 10}, {1, 3}, {2, 6}})`,
+		merge([][]int{{8, 10}, {1, 3}, {2, 6}}), [][]int{{1, 6}, {8, 10}})
 
 	// Small intervals inside a big one.
-	check("inside a big one", merge([][]int{{1, 10}, {2, 3}, {4, 5}}), [][]int{{1, 10}})
+	check("inside a big one", `merge([][]int{{1, 10}, {2, 3}, {4, 5}})`,
+		merge([][]int{{1, 10}, {2, 3}, {4, 5}}), [][]int{{1, 10}})
 
 	// Nothing overlaps.
-	check("no overlap", merge([][]int{{1, 2}, {3, 4}, {5, 6}}), [][]int{{1, 2}, {3, 4}, {5, 6}})
+	check("no overlap", `merge([][]int{{1, 2}, {3, 4}, {5, 6}})`,
+		merge([][]int{{1, 2}, {3, 4}, {5, 6}}), [][]int{{1, 2}, {3, 4}, {5, 6}})
 
 	// The same interval twice.
-	check("same interval twice", merge([][]int{{1, 4}, {1, 4}}), [][]int{{1, 4}})
+	check("same interval twice", `merge([][]int{{1, 4}, {1, 4}})`,
+		merge([][]int{{1, 4}, {1, 4}}), [][]int{{1, 4}})
 
 	// A chain: each one touches the next, so all become one.
-	check("chain", merge([][]int{{1, 4}, {4, 5}, {5, 9}}), [][]int{{1, 9}})
+	check("chain", `merge([][]int{{1, 4}, {4, 5}, {5, 9}})`,
+		merge([][]int{{1, 4}, {4, 5}, {5, 9}}), [][]int{{1, 9}})
 
 	report()
 }
@@ -87,21 +96,38 @@ func main() {
 // passed and failed count the test results.
 var passed, failed int
 
-// check compares the answer we got with the answer we want, and prints
-// PASS or FAIL for that test case.
-func check(name string, got interface{}, want interface{}) {
+// check runs one test case. It prints the input, the result we got and the
+// result we expected, with PASS or FAIL in front.
+//
+//	name:  a short description of the case
+//	input: the call we are testing, written as text so it can be printed
+//	got:   the answer the solution returned
+//	want:  the answer we expect
+func check(name string, input string, got interface{}, want interface{}) {
+	status := "PASS"
 	if fmt.Sprint(got) == fmt.Sprint(want) {
 		passed++
-		fmt.Printf("PASS  %s\n", name)
 	} else {
 		failed++
-		fmt.Printf("FAIL  %s\n      got:  %v\n      want: %v\n", name, got, want)
+		status = "FAIL"
 	}
+	fmt.Printf("%s  %s\n", status, name)
+	fmt.Printf("      input:    %s\n", input)
+	fmt.Printf("      result:   %s\n", show(got))
+	fmt.Printf("      expected: %s\n\n", show(want))
+}
+
+// show turns a value into text. Strings get quotes, so an empty string is visible.
+func show(value interface{}) string {
+	if text, ok := value.(string); ok {
+		return fmt.Sprintf("%q", text)
+	}
+	return fmt.Sprint(value)
 }
 
 // report prints the total. The program exits with an error if a test failed.
 func report() {
-	fmt.Printf("\n%d passed, %d failed\n", passed, failed)
+	fmt.Printf("%d passed, %d failed\n", passed, failed)
 	if failed > 0 {
 		os.Exit(1)
 	}

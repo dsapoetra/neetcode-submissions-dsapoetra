@@ -45,35 +45,46 @@ func isSameTree(p *TreeNode, q *TreeNode) bool {
 
 func main() {
 	// Example 1 from the problem.
-	check("example 1: identical", isSameTree(makeTree(1, 2, 3), makeTree(1, 2, 3)), true)
+	check("example 1: identical", `isSameTree(makeTree(1, 2, 3), makeTree(1, 2, 3))`,
+		isSameTree(makeTree(1, 2, 3), makeTree(1, 2, 3)), true)
 
 	// Example 2 from the problem: 7 is a left child in one tree, a right child in the other.
-	check("example 2: left vs right child", isSameTree(makeTree(4, 7), makeTree(4, nil, 7)), false)
+	check("example 2: left vs right child", `isSameTree(makeTree(4, 7), makeTree(4, nil, 7))`,
+		isSameTree(makeTree(4, 7), makeTree(4, nil, 7)), false)
 
 	// Example 3 from the problem: same values, children swapped.
-	check("example 3: children swapped", isSameTree(makeTree(1, 2, 3), makeTree(1, 3, 2)), false)
+	check("example 3: children swapped", `isSameTree(makeTree(1, 2, 3), makeTree(1, 3, 2))`,
+		isSameTree(makeTree(1, 2, 3), makeTree(1, 3, 2)), false)
 
 	// Two empty trees are the same.
-	check("both empty", isSameTree(makeTree(), makeTree()), true)
+	check("both empty", `isSameTree(makeTree(), makeTree())`,
+		isSameTree(makeTree(), makeTree()), true)
 
 	// One empty, one not.
-	check("first empty", isSameTree(makeTree(), makeTree(1)), false)
-	check("second empty", isSameTree(makeTree(1), makeTree()), false)
+	check("first empty", `isSameTree(makeTree(), makeTree(1))`,
+		isSameTree(makeTree(), makeTree(1)), false)
+	check("second empty", `isSameTree(makeTree(1), makeTree())`,
+		isSameTree(makeTree(1), makeTree()), false)
 
 	// One node each, same value.
-	check("single nodes, same", isSameTree(makeTree(1), makeTree(1)), true)
+	check("single nodes, same", `isSameTree(makeTree(1), makeTree(1))`,
+		isSameTree(makeTree(1), makeTree(1)), true)
 
 	// One node each, different value.
-	check("single nodes, different", isSameTree(makeTree(1), makeTree(2)), false)
+	check("single nodes, different", `isSameTree(makeTree(1), makeTree(2))`,
+		isSameTree(makeTree(1), makeTree(2)), false)
 
 	// One tree has an extra node.
-	check("extra node", isSameTree(makeTree(1, 2), makeTree(1, 2, 3)), false)
+	check("extra node", `isSameTree(makeTree(1, 2), makeTree(1, 2, 3))`,
+		isSameTree(makeTree(1, 2), makeTree(1, 2, 3)), false)
 
 	// Bigger identical trees.
-	check("bigger identical", isSameTree(makeTree(1, 2, 3, 4, nil, nil, 5), makeTree(1, 2, 3, 4, nil, nil, 5)), true)
+	check("bigger identical", `isSameTree(makeTree(1, 2, 3, 4, nil, nil, 5), makeTree(1, 2, 3, 4, nil, nil, 5))`,
+		isSameTree(makeTree(1, 2, 3, 4, nil, nil, 5), makeTree(1, 2, 3, 4, nil, nil, 5)), true)
 
 	// The difference is deep down in the tree.
-	check("different deep down", isSameTree(makeTree(1, 2, 3, 4), makeTree(1, 2, 3, nil, 4)), false)
+	check("different deep down", `isSameTree(makeTree(1, 2, 3, 4), makeTree(1, 2, 3, nil, 4))`,
+		isSameTree(makeTree(1, 2, 3, 4), makeTree(1, 2, 3, nil, 4)), false)
 
 	report()
 }
@@ -120,21 +131,38 @@ func makeTree(vals ...interface{}) *TreeNode {
 // passed and failed count the test results.
 var passed, failed int
 
-// check compares the answer we got with the answer we want, and prints
-// PASS or FAIL for that test case.
-func check(name string, got interface{}, want interface{}) {
+// check runs one test case. It prints the input, the result we got and the
+// result we expected, with PASS or FAIL in front.
+//
+//	name:  a short description of the case
+//	input: the call we are testing, written as text so it can be printed
+//	got:   the answer the solution returned
+//	want:  the answer we expect
+func check(name string, input string, got interface{}, want interface{}) {
+	status := "PASS"
 	if fmt.Sprint(got) == fmt.Sprint(want) {
 		passed++
-		fmt.Printf("PASS  %s\n", name)
 	} else {
 		failed++
-		fmt.Printf("FAIL  %s\n      got:  %v\n      want: %v\n", name, got, want)
+		status = "FAIL"
 	}
+	fmt.Printf("%s  %s\n", status, name)
+	fmt.Printf("      input:    %s\n", input)
+	fmt.Printf("      result:   %s\n", show(got))
+	fmt.Printf("      expected: %s\n\n", show(want))
+}
+
+// show turns a value into text. Strings get quotes, so an empty string is visible.
+func show(value interface{}) string {
+	if text, ok := value.(string); ok {
+		return fmt.Sprintf("%q", text)
+	}
+	return fmt.Sprint(value)
 }
 
 // report prints the total. The program exits with an error if a test failed.
 func report() {
-	fmt.Printf("\n%d passed, %d failed\n", passed, failed)
+	fmt.Printf("%d passed, %d failed\n", passed, failed)
 	if failed > 0 {
 		os.Exit(1)
 	}

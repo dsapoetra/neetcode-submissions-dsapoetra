@@ -33,27 +33,36 @@ func missingNumber(nums []int) int {
 
 func main() {
 	// Example 1 from the problem: 0 is missing.
-	check("example 1: 0 is missing", missingNumber([]int{1, 2, 3}), 0)
+	check("example 1: 0 is missing", `missingNumber([]int{1, 2, 3})`,
+		missingNumber([]int{1, 2, 3}), 0)
 
 	// Example 2 from the problem: 1 is missing.
-	check("example 2: 1 is missing", missingNumber([]int{0, 2}), 1)
+	check("example 2: 1 is missing", `missingNumber([]int{0, 2})`,
+		missingNumber([]int{0, 2}), 1)
 
 	// One number.
-	check("only 0", missingNumber([]int{0}), 1)
-	check("only 1", missingNumber([]int{1}), 0)
+	check("only 0", `missingNumber([]int{0})`,
+		missingNumber([]int{0}), 1)
+	check("only 1", `missingNumber([]int{1})`,
+		missingNumber([]int{1}), 0)
 
 	// The classic example.
-	check("classic", missingNumber([]int{3, 0, 1}), 2)
+	check("classic", `missingNumber([]int{3, 0, 1})`,
+		missingNumber([]int{3, 0, 1}), 2)
 
 	// The biggest number (n) is missing.
-	check("biggest is missing", missingNumber([]int{0, 1}), 2)
-	check("biggest is missing (longer)", missingNumber([]int{0, 1, 2, 3}), 4)
+	check("biggest is missing", `missingNumber([]int{0, 1})`,
+		missingNumber([]int{0, 1}), 2)
+	check("biggest is missing (longer)", `missingNumber([]int{0, 1, 2, 3})`,
+		missingNumber([]int{0, 1, 2, 3}), 4)
 
 	// A longer unsorted list.
-	check("longer unsorted list", missingNumber([]int{9, 6, 4, 2, 3, 5, 7, 0, 1}), 8)
+	check("longer unsorted list", `missingNumber([]int{9, 6, 4, 2, 3, 5, 7, 0, 1})`,
+		missingNumber([]int{9, 6, 4, 2, 3, 5, 7, 0, 1}), 8)
 
 	// A number in the middle is missing.
-	check("middle is missing", missingNumber([]int{1, 0, 3}), 2)
+	check("middle is missing", `missingNumber([]int{1, 0, 3})`,
+		missingNumber([]int{1, 0, 3}), 2)
 
 	report()
 }
@@ -63,21 +72,38 @@ func main() {
 // passed and failed count the test results.
 var passed, failed int
 
-// check compares the answer we got with the answer we want, and prints
-// PASS or FAIL for that test case.
-func check(name string, got interface{}, want interface{}) {
+// check runs one test case. It prints the input, the result we got and the
+// result we expected, with PASS or FAIL in front.
+//
+//	name:  a short description of the case
+//	input: the call we are testing, written as text so it can be printed
+//	got:   the answer the solution returned
+//	want:  the answer we expect
+func check(name string, input string, got interface{}, want interface{}) {
+	status := "PASS"
 	if fmt.Sprint(got) == fmt.Sprint(want) {
 		passed++
-		fmt.Printf("PASS  %s\n", name)
 	} else {
 		failed++
-		fmt.Printf("FAIL  %s\n      got:  %v\n      want: %v\n", name, got, want)
+		status = "FAIL"
 	}
+	fmt.Printf("%s  %s\n", status, name)
+	fmt.Printf("      input:    %s\n", input)
+	fmt.Printf("      result:   %s\n", show(got))
+	fmt.Printf("      expected: %s\n\n", show(want))
+}
+
+// show turns a value into text. Strings get quotes, so an empty string is visible.
+func show(value interface{}) string {
+	if text, ok := value.(string); ok {
+		return fmt.Sprintf("%q", text)
+	}
+	return fmt.Sprint(value)
 }
 
 // report prints the total. The program exits with an error if a test failed.
 func report() {
-	fmt.Printf("\n%d passed, %d failed\n", passed, failed)
+	fmt.Printf("%d passed, %d failed\n", passed, failed)
 	if failed > 0 {
 		os.Exit(1)
 	}

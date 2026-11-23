@@ -60,36 +60,47 @@ func sameTree(a *TreeNode, b *TreeNode) bool {
 
 func main() {
 	// Example 1 from the problem: the left part of the big tree is exactly the small tree.
-	check("example 1: is a subtree", isSubtree(makeTree(1, 2, 3, 4, 5), makeTree(2, 4, 5)), true)
+	check("example 1: is a subtree", `isSubtree(makeTree(1, 2, 3, 4, 5), makeTree(2, 4, 5))`,
+		isSubtree(makeTree(1, 2, 3, 4, 5), makeTree(2, 4, 5)), true)
 
 	// Example 2 from the problem: the big tree has an extra node (6) under 4,
 	// so that part is NOT exactly the same.
-	check("example 2: extra node below", isSubtree(makeTree(1, 2, 3, 4, 5, nil, nil, 6), makeTree(2, 4, 5)), false)
+	check("example 2: extra node below", `isSubtree(makeTree(1, 2, 3, 4, 5, nil, nil, 6), makeTree(2, 4, 5))`,
+		isSubtree(makeTree(1, 2, 3, 4, 5, nil, nil, 6), makeTree(2, 4, 5)), false)
 
 	// A tree is a subtree of itself.
-	check("same tree", isSubtree(makeTree(1, 2, 3), makeTree(1, 2, 3)), true)
+	check("same tree", `isSubtree(makeTree(1, 2, 3), makeTree(1, 2, 3))`,
+		isSubtree(makeTree(1, 2, 3), makeTree(1, 2, 3)), true)
 
 	// Single nodes.
-	check("single nodes, same", isSubtree(makeTree(1), makeTree(1)), true)
-	check("single nodes, different", isSubtree(makeTree(1), makeTree(2)), false)
+	check("single nodes, same", `isSubtree(makeTree(1), makeTree(1))`,
+		isSubtree(makeTree(1), makeTree(1)), true)
+	check("single nodes, different", `isSubtree(makeTree(1), makeTree(2))`,
+		isSubtree(makeTree(1), makeTree(2)), false)
 
 	// An empty tree is a subtree of every tree.
-	check("empty subRoot", isSubtree(makeTree(1, 2, 3), makeTree()), true)
+	check("empty subRoot", `isSubtree(makeTree(1, 2, 3), makeTree())`,
+		isSubtree(makeTree(1, 2, 3), makeTree()), true)
 
 	// Nothing (except an empty tree) is a subtree of an empty tree.
-	check("empty root", isSubtree(makeTree(), makeTree(1)), false)
+	check("empty root", `isSubtree(makeTree(), makeTree(1))`,
+		isSubtree(makeTree(), makeTree(1)), false)
 
 	// The classic example.
-	check("classic true", isSubtree(makeTree(3, 4, 5, 1, 2), makeTree(4, 1, 2)), true)
+	check("classic true", `isSubtree(makeTree(3, 4, 5, 1, 2), makeTree(4, 1, 2))`,
+		isSubtree(makeTree(3, 4, 5, 1, 2), makeTree(4, 1, 2)), true)
 
 	// The classic "false" example: an extra 0 under the 2.
-	check("classic false", isSubtree(makeTree(3, 4, 5, 1, 2, nil, nil, nil, nil, 0), makeTree(4, 1, 2)), false)
+	check("classic false", `isSubtree(makeTree(3, 4, 5, 1, 2, nil, nil, nil, nil, 0), makeTree(4, 1, 2))`,
+		isSubtree(makeTree(3, 4, 5, 1, 2, nil, nil, nil, nil, 0), makeTree(4, 1, 2)), false)
 
 	// A single leaf is a subtree.
-	check("a leaf", isSubtree(makeTree(1, 2, 3), makeTree(3)), true)
+	check("a leaf", `isSubtree(makeTree(1, 2, 3), makeTree(3))`,
+		isSubtree(makeTree(1, 2, 3), makeTree(3)), true)
 
 	// Same values everywhere: the first try (at the root) fails, the child matches.
-	check("repeated values", isSubtree(makeTree(1, 1), makeTree(1)), true)
+	check("repeated values", `isSubtree(makeTree(1, 1), makeTree(1))`,
+		isSubtree(makeTree(1, 1), makeTree(1)), true)
 
 	report()
 }
@@ -136,21 +147,38 @@ func makeTree(vals ...interface{}) *TreeNode {
 // passed and failed count the test results.
 var passed, failed int
 
-// check compares the answer we got with the answer we want, and prints
-// PASS or FAIL for that test case.
-func check(name string, got interface{}, want interface{}) {
+// check runs one test case. It prints the input, the result we got and the
+// result we expected, with PASS or FAIL in front.
+//
+//	name:  a short description of the case
+//	input: the call we are testing, written as text so it can be printed
+//	got:   the answer the solution returned
+//	want:  the answer we expect
+func check(name string, input string, got interface{}, want interface{}) {
+	status := "PASS"
 	if fmt.Sprint(got) == fmt.Sprint(want) {
 		passed++
-		fmt.Printf("PASS  %s\n", name)
 	} else {
 		failed++
-		fmt.Printf("FAIL  %s\n      got:  %v\n      want: %v\n", name, got, want)
+		status = "FAIL"
 	}
+	fmt.Printf("%s  %s\n", status, name)
+	fmt.Printf("      input:    %s\n", input)
+	fmt.Printf("      result:   %s\n", show(got))
+	fmt.Printf("      expected: %s\n\n", show(want))
+}
+
+// show turns a value into text. Strings get quotes, so an empty string is visible.
+func show(value interface{}) string {
+	if text, ok := value.(string); ok {
+		return fmt.Sprintf("%q", text)
+	}
+	return fmt.Sprint(value)
 }
 
 // report prints the total. The program exits with an error if a test failed.
 func report() {
-	fmt.Printf("\n%d passed, %d failed\n", passed, failed)
+	fmt.Printf("%d passed, %d failed\n", passed, failed)
 	if failed > 0 {
 		os.Exit(1)
 	}

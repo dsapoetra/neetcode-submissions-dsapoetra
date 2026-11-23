@@ -60,36 +60,49 @@ func growPalindrome(s string, left int, right int) (int, int) {
 // ===================== Test cases =====================
 
 func main() {
-	// Example 1 from the problem: both "aba" and "bab" are correct answers.
-	got := longestPalindrome("ababd")
-	check("example 1: aba or bab", got == "aba" || got == "bab", true)
+	// Example 1 from the problem: both "aba" and "bab" are correct answers,
+	// so this case checks that the answer is one of the two.
+	isAbaOrBab := func(answer string) bool {
+		return answer == "aba" || answer == "bab"
+	}
+	check("example 1: aba or bab", `isAbaOrBab(longestPalindrome("ababd"))`,
+		isAbaOrBab(longestPalindrome("ababd")), true)
 
 	// Example 2 from the problem: an even-length palindrome.
-	check("example 2: even length", longestPalindrome("abbc"), "bb")
+	check("example 2: even length", `longestPalindrome("abbc")`,
+		longestPalindrome("abbc"), "bb")
 
 	// One letter is a palindrome.
-	check("one letter", longestPalindrome("a"), "a")
+	check("one letter", `longestPalindrome("a")`,
+		longestPalindrome("a"), "a")
 
 	// Empty string.
-	check("empty string", longestPalindrome(""), "")
+	check("empty string", `longestPalindrome("")`,
+		longestPalindrome(""), "")
 
 	// The whole string is a palindrome.
-	check("whole string", longestPalindrome("racecar"), "racecar")
+	check("whole string", `longestPalindrome("racecar")`,
+		longestPalindrome("racecar"), "racecar")
 
 	// All letters the same.
-	check("all the same", longestPalindrome("aaaa"), "aaaa")
+	check("all the same", `longestPalindrome("aaaa")`,
+		longestPalindrome("aaaa"), "aaaa")
 
 	// No palindrome longer than one letter: any single letter is correct.
-	check("no long palindrome", len(longestPalindrome("abc")), 1)
+	check("no long palindrome", `len(longestPalindrome("abc"))`,
+		len(longestPalindrome("abc")), 1)
 
 	// A long even palindrome in the middle.
-	check("in the middle", longestPalindrome("forgeeksskeegfor"), "geeksskeeg")
+	check("in the middle", `longestPalindrome("forgeeksskeegfor")`,
+		longestPalindrome("forgeeksskeegfor"), "geeksskeeg")
 
 	// An odd palindrome in the middle.
-	check("odd, in the middle", longestPalindrome("xabay"), "aba")
+	check("odd, in the middle", `longestPalindrome("xabay")`,
+		longestPalindrome("xabay"), "aba")
 
 	// The palindrome is at the very end.
-	check("at the end", longestPalindrome("noonracecar"), "racecar")
+	check("at the end", `longestPalindrome("noonracecar")`,
+		longestPalindrome("noonracecar"), "racecar")
 
 	report()
 }
@@ -99,21 +112,38 @@ func main() {
 // passed and failed count the test results.
 var passed, failed int
 
-// check compares the answer we got with the answer we want, and prints
-// PASS or FAIL for that test case.
-func check(name string, got interface{}, want interface{}) {
+// check runs one test case. It prints the input, the result we got and the
+// result we expected, with PASS or FAIL in front.
+//
+//	name:  a short description of the case
+//	input: the call we are testing, written as text so it can be printed
+//	got:   the answer the solution returned
+//	want:  the answer we expect
+func check(name string, input string, got interface{}, want interface{}) {
+	status := "PASS"
 	if fmt.Sprint(got) == fmt.Sprint(want) {
 		passed++
-		fmt.Printf("PASS  %s\n", name)
 	} else {
 		failed++
-		fmt.Printf("FAIL  %s\n      got:  %v\n      want: %v\n", name, got, want)
+		status = "FAIL"
 	}
+	fmt.Printf("%s  %s\n", status, name)
+	fmt.Printf("      input:    %s\n", input)
+	fmt.Printf("      result:   %s\n", show(got))
+	fmt.Printf("      expected: %s\n\n", show(want))
+}
+
+// show turns a value into text. Strings get quotes, so an empty string is visible.
+func show(value interface{}) string {
+	if text, ok := value.(string); ok {
+		return fmt.Sprintf("%q", text)
+	}
+	return fmt.Sprint(value)
 }
 
 // report prints the total. The program exits with an error if a test failed.
 func report() {
-	fmt.Printf("\n%d passed, %d failed\n", passed, failed)
+	fmt.Printf("%d passed, %d failed\n", passed, failed)
 	if failed > 0 {
 		os.Exit(1)
 	}

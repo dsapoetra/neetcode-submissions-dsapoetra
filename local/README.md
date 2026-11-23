@@ -4,7 +4,7 @@ Each folder here is one NeetCode problem. Its `main.go` contains:
 
 1. a copy of the latest Go submission from `Data Structures & Algorithms/<problem>/`
 2. the types NeetCode normally provides (`ListNode`, `TreeNode`, ...)
-3. a `main()` with commented test cases that prints `PASS` / `FAIL`
+3. a `main()` with commented test cases. For every case it prints `PASS` / `FAIL`, the input, the result and the expected result
 
 The synced `submission-*.go` files are not touched, because NeetCode's GitHub Sync owns them.
 
@@ -28,9 +28,24 @@ Open the problem's `main.go`, go to `func main()` and add a line:
 
 ```go
 // what this case is testing
-check("my case", twoSum([]int{1, 2, 3}, 5), []int{1, 2})
+check("my case", `twoSum([]int{1, 2, 3}, 5)`,
+	twoSum([]int{1, 2, 3}, 5), []int{1, 2})
 ```
 
-`check(name, got, want)` prints `PASS` when the two values are equal.
+`check(name, input, got, want)`:
+
+- `name`: a short description
+- `input`: the call written as text between backticks, only used for printing
+- `got`: the real call
+- `want`: the answer you expect
+
+Example output:
+
+```
+PASS  my case
+      input:    twoSum([]int{1, 2, 3}, 5)
+      result:   [1 2]
+      expected: [1 2]
+```
 
 Note: if you submit a new solution on NeetCode, the copy in `local/` does not update by itself — paste the new code over the "Solution" part of `main.go`.

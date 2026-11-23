@@ -63,28 +63,36 @@ func main() {
 	// The result is written level by level, the same way NeetCode shows trees.
 
 	// Example 1 from the problem.
-	check("example 1", treeString(buildTree([]int{1, 2, 3, 4}, []int{2, 1, 3, 4})), "[1,2,3,null,null,null,4]")
+	check("example 1", `treeString(buildTree([]int{1, 2, 3, 4}, []int{2, 1, 3, 4}))`,
+		treeString(buildTree([]int{1, 2, 3, 4}, []int{2, 1, 3, 4})), "[1,2,3,null,null,null,4]")
 
 	// Example 2 from the problem: one node.
-	check("example 2: one node", treeString(buildTree([]int{1}, []int{1})), "[1]")
+	check("example 2: one node", `treeString(buildTree([]int{1}, []int{1}))`,
+		treeString(buildTree([]int{1}, []int{1})), "[1]")
 
 	// The classic example.
-	check("classic", treeString(buildTree([]int{3, 9, 20, 15, 7}, []int{9, 3, 15, 20, 7})), "[3,9,20,null,null,15,7]")
+	check("classic", `treeString(buildTree([]int{3, 9, 20, 15, 7}, []int{9, 3, 15, 20, 7}))`,
+		treeString(buildTree([]int{3, 9, 20, 15, 7}, []int{9, 3, 15, 20, 7})), "[3,9,20,null,null,15,7]")
 
 	// Everything goes left: inorder is preorder backwards.
-	check("left chain", treeString(buildTree([]int{1, 2, 3}, []int{3, 2, 1})), "[1,2,null,3]")
+	check("left chain", `treeString(buildTree([]int{1, 2, 3}, []int{3, 2, 1}))`,
+		treeString(buildTree([]int{1, 2, 3}, []int{3, 2, 1})), "[1,2,null,3]")
 
 	// Everything goes right: inorder is the same as preorder.
-	check("right chain", treeString(buildTree([]int{1, 2, 3}, []int{1, 2, 3})), "[1,null,2,null,3]")
+	check("right chain", `treeString(buildTree([]int{1, 2, 3}, []int{1, 2, 3}))`,
+		treeString(buildTree([]int{1, 2, 3}, []int{1, 2, 3})), "[1,null,2,null,3]")
 
 	// No nodes.
-	check("empty tree", treeString(buildTree([]int{}, []int{})), "[]")
+	check("empty tree", `treeString(buildTree([]int{}, []int{}))`,
+		treeString(buildTree([]int{}, []int{})), "[]")
 
 	// A full tree with 3 levels.
-	check("full tree", treeString(buildTree([]int{4, 2, 1, 3, 6, 5, 7}, []int{1, 2, 3, 4, 5, 6, 7})), "[4,2,6,1,3,5,7]")
+	check("full tree", `treeString(buildTree([]int{4, 2, 1, 3, 6, 5, 7}, []int{1, 2, 3, 4, 5, 6, 7}))`,
+		treeString(buildTree([]int{4, 2, 1, 3, 6, 5, 7}, []int{1, 2, 3, 4, 5, 6, 7})), "[4,2,6,1,3,5,7]")
 
 	// Negative values.
-	check("negative values", treeString(buildTree([]int{-1, -2, -3}, []int{-2, -1, -3})), "[-1,-2,-3]")
+	check("negative values", `treeString(buildTree([]int{-1, -2, -3}, []int{-2, -1, -3}))`,
+		treeString(buildTree([]int{-1, -2, -3}, []int{-2, -1, -3})), "[-1,-2,-3]")
 
 	report()
 }
@@ -116,21 +124,38 @@ func treeString(root *TreeNode) string {
 // passed and failed count the test results.
 var passed, failed int
 
-// check compares the answer we got with the answer we want, and prints
-// PASS or FAIL for that test case.
-func check(name string, got interface{}, want interface{}) {
+// check runs one test case. It prints the input, the result we got and the
+// result we expected, with PASS or FAIL in front.
+//
+//	name:  a short description of the case
+//	input: the call we are testing, written as text so it can be printed
+//	got:   the answer the solution returned
+//	want:  the answer we expect
+func check(name string, input string, got interface{}, want interface{}) {
+	status := "PASS"
 	if fmt.Sprint(got) == fmt.Sprint(want) {
 		passed++
-		fmt.Printf("PASS  %s\n", name)
 	} else {
 		failed++
-		fmt.Printf("FAIL  %s\n      got:  %v\n      want: %v\n", name, got, want)
+		status = "FAIL"
 	}
+	fmt.Printf("%s  %s\n", status, name)
+	fmt.Printf("      input:    %s\n", input)
+	fmt.Printf("      result:   %s\n", show(got))
+	fmt.Printf("      expected: %s\n\n", show(want))
+}
+
+// show turns a value into text. Strings get quotes, so an empty string is visible.
+func show(value interface{}) string {
+	if text, ok := value.(string); ok {
+		return fmt.Sprintf("%q", text)
+	}
+	return fmt.Sprint(value)
 }
 
 // report prints the total. The program exits with an error if a test failed.
 func report() {
-	fmt.Printf("\n%d passed, %d failed\n", passed, failed)
+	fmt.Printf("%d passed, %d failed\n", passed, failed)
 	if failed > 0 {
 		os.Exit(1)
 	}

@@ -94,35 +94,40 @@ func main() {
 	// The words may come back in any order, so we sort them before comparing.
 
 	// Example 1 from the problem.
-	check("example 1",
-		sortedStrings(findWords(byteGrid("abcd", "saat", "acke", "acdn"), []string{"bat", "cat", "back", "backend", "stack"})),
-		[]string{"back", "backend", "cat"})
+	check("example 1", `sortedStrings(findWords(byteGrid("abcd", "saat", "acke", "acdn"), []string{"bat", "cat", "back", "backend", "stack"}))`,
+		sortedStrings(findWords(byteGrid("abcd", "saat", "acke", "acdn"), []string{"bat", "cat", "back", "backend", "stack"})), []string{"back", "backend", "cat"})
 
 	// Example 2 from the problem: "xoxo" would need a cell twice.
-	check("example 2: nothing found", sortedStrings(findWords(byteGrid("xo", "xo"), []string{"xoxo"})), []string{})
+	check("example 2: nothing found", `sortedStrings(findWords(byteGrid("xo", "xo"), []string{"xoxo"}))`,
+		sortedStrings(findWords(byteGrid("xo", "xo"), []string{"xoxo"})), []string{})
 
 	// The classic example.
-	check("classic",
-		sortedStrings(findWords(byteGrid("oaan", "etae", "ihkr", "iflv"), []string{"oath", "pea", "eat", "rain"})),
-		[]string{"eat", "oath"})
+	check("classic", `sortedStrings(findWords(byteGrid("oaan", "etae", "ihkr", "iflv"), []string{"oath", "pea", "eat", "rain"}))`,
+		sortedStrings(findWords(byteGrid("oaan", "etae", "ihkr", "iflv"), []string{"oath", "pea", "eat", "rain"})), []string{"eat", "oath"})
 
 	// A board with one cell.
-	check("one cell", sortedStrings(findWords(byteGrid("a"), []string{"a", "b", "aa"})), []string{"a"})
+	check("one cell", `sortedStrings(findWords(byteGrid("a"), []string{"a", "b", "aa"}))`,
+		sortedStrings(findWords(byteGrid("a"), []string{"a", "b", "aa"})), []string{"a"})
 
 	// The word can be found in two places, but must be listed only once.
-	check("found twice, listed once", sortedStrings(findWords(byteGrid("aa"), []string{"a"})), []string{"a"})
+	check("found twice, listed once", `sortedStrings(findWords(byteGrid("aa"), []string{"a"}))`,
+		sortedStrings(findWords(byteGrid("aa"), []string{"a"})), []string{"a"})
 
 	// "aba" would need the same 'a' twice.
-	check("cell cannot be reused", sortedStrings(findWords(byteGrid("ab"), []string{"aba"})), []string{})
+	check("cell cannot be reused", `sortedStrings(findWords(byteGrid("ab"), []string{"aba"}))`,
+		sortedStrings(findWords(byteGrid("ab"), []string{"aba"})), []string{})
 
 	// One word is the beginning of another: both must be found.
-	check("word inside another word", sortedStrings(findWords(byteGrid("abc"), []string{"ab", "abc", "a"})), []string{"a", "ab", "abc"})
+	check("word inside another word", `sortedStrings(findWords(byteGrid("abc"), []string{"ab", "abc", "a"}))`,
+		sortedStrings(findWords(byteGrid("abc"), []string{"ab", "abc", "a"})), []string{"a", "ab", "abc"})
 
 	// No words to look for.
-	check("no words", sortedStrings(findWords(byteGrid("ab", "cd"), []string{})), []string{})
+	check("no words", `sortedStrings(findWords(byteGrid("ab", "cd"), []string{}))`,
+		sortedStrings(findWords(byteGrid("ab", "cd"), []string{})), []string{})
 
 	// The word goes around a corner: a -> b -> d -> c.
-	check("around the square", sortedStrings(findWords(byteGrid("ab", "cd"), []string{"abdc", "abcd"})), []string{"abdc"})
+	check("around the square", `sortedStrings(findWords(byteGrid("ab", "cd"), []string{"abdc", "abcd"}))`,
+		sortedStrings(findWords(byteGrid("ab", "cd"), []string{"abdc", "abcd"})), []string{"abdc"})
 
 	report()
 }
@@ -148,21 +153,38 @@ func byteGrid(rows ...string) [][]byte {
 // passed and failed count the test results.
 var passed, failed int
 
-// check compares the answer we got with the answer we want, and prints
-// PASS or FAIL for that test case.
-func check(name string, got interface{}, want interface{}) {
+// check runs one test case. It prints the input, the result we got and the
+// result we expected, with PASS or FAIL in front.
+//
+//	name:  a short description of the case
+//	input: the call we are testing, written as text so it can be printed
+//	got:   the answer the solution returned
+//	want:  the answer we expect
+func check(name string, input string, got interface{}, want interface{}) {
+	status := "PASS"
 	if fmt.Sprint(got) == fmt.Sprint(want) {
 		passed++
-		fmt.Printf("PASS  %s\n", name)
 	} else {
 		failed++
-		fmt.Printf("FAIL  %s\n      got:  %v\n      want: %v\n", name, got, want)
+		status = "FAIL"
 	}
+	fmt.Printf("%s  %s\n", status, name)
+	fmt.Printf("      input:    %s\n", input)
+	fmt.Printf("      result:   %s\n", show(got))
+	fmt.Printf("      expected: %s\n\n", show(want))
+}
+
+// show turns a value into text. Strings get quotes, so an empty string is visible.
+func show(value interface{}) string {
+	if text, ok := value.(string); ok {
+		return fmt.Sprintf("%q", text)
+	}
+	return fmt.Sprint(value)
 }
 
 // report prints the total. The program exits with an error if a test failed.
 func report() {
-	fmt.Printf("\n%d passed, %d failed\n", passed, failed)
+	fmt.Printf("%d passed, %d failed\n", passed, failed)
 	if failed > 0 {
 		os.Exit(1)
 	}

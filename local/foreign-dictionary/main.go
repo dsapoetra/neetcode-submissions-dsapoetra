@@ -105,31 +105,40 @@ func main() {
 	}
 
 	// Example 1 from the problem: "z" comes before "o".
-	check("example 1", foreignDictionary([]string{"z", "o"}), "zo")
+	check("example 1", `foreignDictionary([]string{"z", "o"})`,
+		foreignDictionary([]string{"z", "o"}), "zo")
 
 	// Example 2 from the problem: the rules are h<e, e<r, r<n, n<f.
-	check("example 2", foreignDictionary([]string{"hrn", "hrf", "er", "enn", "rfnn"}), "hernf")
+	check("example 2", `foreignDictionary([]string{"hrn", "hrf", "er", "enn", "rfnn"})`,
+		foreignDictionary([]string{"hrn", "hrf", "er", "enn", "rfnn"}), "hernf")
 
 	// The classic example: w<e, e<r, r<t, t<f.
-	check("classic", foreignDictionary([]string{"wrt", "wrf", "er", "ett", "rftt"}), "wertf")
+	check("classic", `foreignDictionary([]string{"wrt", "wrf", "er", "ett", "rftt"})`,
+		foreignDictionary([]string{"wrt", "wrf", "er", "ett", "rftt"}), "wertf")
 
 	// A longer word before its own prefix is never a valid order.
-	check("word before its prefix", foreignDictionary([]string{"abc", "ab"}), "")
+	check("word before its prefix", `foreignDictionary([]string{"abc", "ab"})`,
+		foreignDictionary([]string{"abc", "ab"}), "")
 
 	// a<b and b<a at the same time: a cycle, so no valid order.
-	check("cycle", foreignDictionary([]string{"a", "b", "a"}), "")
+	check("cycle", `foreignDictionary([]string{"a", "b", "a"})`,
+		foreignDictionary([]string{"a", "b", "a"}), "")
 
 	// The same word twice gives no rule, but the letter must be in the answer.
-	check("same word twice", foreignDictionary([]string{"z", "z"}), "z")
+	check("same word twice", `foreignDictionary([]string{"z", "z"})`,
+		foreignDictionary([]string{"z", "z"}), "z")
 
 	// Three one-letter words: a<b, b<c.
-	check("simple chain", foreignDictionary([]string{"a", "b", "c"}), "abc")
+	check("simple chain", `foreignDictionary([]string{"a", "b", "c"})`,
+		foreignDictionary([]string{"a", "b", "c"}), "abc")
 
 	// One word gives no rules: any order of its letters is correct.
-	check("one word: all letters present", sortLetters(foreignDictionary([]string{"abc"})), "abc")
+	check("one word: all letters present", `sortLetters(foreignDictionary([]string{"abc"}))`,
+		sortLetters(foreignDictionary([]string{"abc"})), "abc")
 
 	// A prefix before the longer word is fine, and gives no rules.
-	check("prefix first: all letters present", sortLetters(foreignDictionary([]string{"ab", "abc"})), "abc")
+	check("prefix first: all letters present", `sortLetters(foreignDictionary([]string{"ab", "abc"}))`,
+		sortLetters(foreignDictionary([]string{"ab", "abc"})), "abc")
 
 	report()
 }
@@ -139,21 +148,38 @@ func main() {
 // passed and failed count the test results.
 var passed, failed int
 
-// check compares the answer we got with the answer we want, and prints
-// PASS or FAIL for that test case.
-func check(name string, got interface{}, want interface{}) {
+// check runs one test case. It prints the input, the result we got and the
+// result we expected, with PASS or FAIL in front.
+//
+//	name:  a short description of the case
+//	input: the call we are testing, written as text so it can be printed
+//	got:   the answer the solution returned
+//	want:  the answer we expect
+func check(name string, input string, got interface{}, want interface{}) {
+	status := "PASS"
 	if fmt.Sprint(got) == fmt.Sprint(want) {
 		passed++
-		fmt.Printf("PASS  %s\n", name)
 	} else {
 		failed++
-		fmt.Printf("FAIL  %s\n      got:  %v\n      want: %v\n", name, got, want)
+		status = "FAIL"
 	}
+	fmt.Printf("%s  %s\n", status, name)
+	fmt.Printf("      input:    %s\n", input)
+	fmt.Printf("      result:   %s\n", show(got))
+	fmt.Printf("      expected: %s\n\n", show(want))
+}
+
+// show turns a value into text. Strings get quotes, so an empty string is visible.
+func show(value interface{}) string {
+	if text, ok := value.(string); ok {
+		return fmt.Sprintf("%q", text)
+	}
+	return fmt.Sprint(value)
 }
 
 // report prints the total. The program exits with an error if a test failed.
 func report() {
-	fmt.Printf("\n%d passed, %d failed\n", passed, failed)
+	fmt.Printf("%d passed, %d failed\n", passed, failed)
 	if failed > 0 {
 		os.Exit(1)
 	}
