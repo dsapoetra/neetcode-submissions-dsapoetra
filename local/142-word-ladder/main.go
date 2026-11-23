@@ -42,7 +42,7 @@ import (
 // shortest possible.
 // Time: O(n^2 * word length), fine for the small word lists here.
 func ladderLength(beginWord string, endWord string, wordList []string) int {
-	// used[i] is true once wordList[i] is in the chain; a word is never
+	// used[i] is true once the search has reached wordList[i]; a word is never
 	// used twice (a second, later visit can only be a longer way)
 	used := make([]bool, len(wordList))
 	queue := []string{beginWord}

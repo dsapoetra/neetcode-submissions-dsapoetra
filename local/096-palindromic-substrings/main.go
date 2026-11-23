@@ -48,9 +48,8 @@ func countSubstrings(s string) int {
 
 // countFromCenter counts the palindromes that have this center.
 func countFromCenter(s string, left int, right int) int {
-	// start at the center and grow outwards
 	count := 0
-	// stop at the edge of the string, or when the two sides do not match
+	// grow outwards from the center; stop at the edge of the string, or when the two sides do not match
 	for left >= 0 && right < len(s) && s[left] == s[right] {
 		// s[left..right] is a palindrome
 		count++

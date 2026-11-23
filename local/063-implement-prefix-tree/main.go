@@ -87,8 +87,8 @@ func (this *PrefixTree) StartsWith(prefix string) bool {
 // or nil if the path does not exist.
 func (this *PrefixTree) find(text string) *prefixNode {
 	cur := this.root
-	// step down one letter; a missing letter gives nil
 	for i := 0; i < len(text); i++ {
+		// step down one letter; a missing letter gives nil
 		cur = cur.children[text[i]]
 		if cur == nil {
 			return nil

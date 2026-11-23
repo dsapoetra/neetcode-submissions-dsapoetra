@@ -50,7 +50,7 @@ func lastStoneWeight(stones []int) int {
 		second := stones[len(stones)-2]
 		stones = stones[:len(stones)-2] // remove both
 
-		// equal stones destroy each other, nothing goes back
+		// equal stones destroy each other; only different stones leave a rest
 		if heaviest != second {
 			stones = append(stones, heaviest-second) // what is left of the heavier one
 		}
