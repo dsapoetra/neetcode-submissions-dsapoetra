@@ -38,24 +38,30 @@ import (
 // seen before. Then we are in a loop and will never reach 1.
 // A set of the numbers we have seen detects the loop.
 func isHappy(n int) bool {
+	// seen[x] is true if the number x came up before
 	seen := map[int]bool{}
 
 	for n != 1 {
 		if seen[n] {
 			return false // we were here before: a loop
 		}
+		// remember this number, then go to the next one
 		seen[n] = true
 		n = sumOfDigitSquares(n)
 	}
+	// the loop ended, so n is 1: the number is happy
 	return true
 }
 
 // sumOfDigitSquares returns, for example, 1*1 + 9*9 = 82 for 19.
 func sumOfDigitSquares(n int) int {
 	sum := 0
+	// take the digits off one by one, starting from the right
 	for n > 0 {
+		// the last digit (for 19 this is 9)
 		digit := n % 10
 		sum += digit * digit
+		// drop the last digit (19 becomes 1)
 		n /= 10
 	}
 	return sum

@@ -48,6 +48,7 @@ import (
 // idle time is needed at all and the answer is just the number of tasks.
 // Time: O(n).
 func leastInterval(tasks []byte, n int) int {
+	// count[0] = how many times task 'A' appears, count[1] = 'B', ...
 	var count [26]int
 	for _, task := range tasks {
 		count[task-'A']++
@@ -57,15 +58,21 @@ func leastInterval(tasks []byte, n int) int {
 	maxCount := 0
 	tasksWithMax := 0
 	for _, c := range count {
+		// a new highest count: this task is the only one with it so far
 		if c > maxCount {
 			maxCount = c
 			tasksWithMax = 1
 		} else if c == maxCount {
+			// another task with the same highest count
 			tasksWithMax++
 		}
 	}
 
+	// the length of the schedule built around the most frequent task(s)
+	// (see the drawing above)
 	slots := (maxCount-1)*(n+1) + tasksWithMax
+	// more tasks than slots: the extra tasks stretch the gaps,
+	// so no idle time is needed
 	if len(tasks) > slots {
 		return len(tasks)
 	}

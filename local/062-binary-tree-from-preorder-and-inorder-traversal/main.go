@@ -54,10 +54,12 @@ type TreeNode struct {
 // the left and right subtrees the same way (recursion).
 // Time: O(n^2) because we search for the root in inorder each time.
 func buildTree(preorder []int, inorder []int) *TreeNode {
+	// no values left: an empty subtree
 	if len(preorder) == 0 {
 		return nil
 	}
 
+	// the first value in preorder is always the root
 	rootVal := preorder[0]
 	root := &TreeNode{Val: rootVal}
 
@@ -68,7 +70,10 @@ func buildTree(preorder []int, inorder []int) *TreeNode {
 	}
 	// mid is also the number of nodes in the left subtree
 
+	// left subtree: the next "mid" values of preorder (after the root),
+	// and everything before the root in inorder
 	root.Left = buildTree(preorder[1:1+mid], inorder[:mid])
+	// right subtree: all the values that are left
 	root.Right = buildTree(preorder[1+mid:], inorder[mid+1:])
 	return root
 }

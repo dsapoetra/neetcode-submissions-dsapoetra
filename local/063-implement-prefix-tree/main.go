@@ -37,6 +37,7 @@ import (
 //   - isWord:   true if a word ends exactly here
 
 type prefixNode struct {
+	// next letter -> the node for that letter
 	children map[byte]*prefixNode
 	isWord   bool
 }
@@ -45,22 +46,27 @@ type PrefixTree struct {
 	root *prefixNode
 }
 
+// newPrefixNode makes an empty node with a ready-to-use children map.
 func newPrefixNode() *prefixNode {
 	return &prefixNode{children: map[byte]*prefixNode{}}
 }
 
+// Constructor makes an empty tree: only a root, which holds no letter.
 func Constructor() PrefixTree {
 	return PrefixTree{root: newPrefixNode()}
 }
 
 // Insert walks down letter by letter, creating nodes that do not exist yet.
 func (this *PrefixTree) Insert(word string) {
+	// cur is the node we are standing on; start at the root
 	cur := this.root
 	for i := 0; i < len(word); i++ {
 		letter := word[i]
+		// no node for this letter yet: create it
 		if cur.children[letter] == nil {
 			cur.children[letter] = newPrefixNode()
 		}
+		// step down to the node of this letter
 		cur = cur.children[letter]
 	}
 	cur.isWord = true // mark the end of the word
@@ -81,12 +87,14 @@ func (this *PrefixTree) StartsWith(prefix string) bool {
 // or nil if the path does not exist.
 func (this *PrefixTree) find(text string) *prefixNode {
 	cur := this.root
+	// step down one letter; a missing letter gives nil
 	for i := 0; i < len(text); i++ {
 		cur = cur.children[text[i]]
 		if cur == nil {
 			return nil
 		}
 	}
+	// the whole text was found; cur is the node of its last letter
 	return cur
 }
 

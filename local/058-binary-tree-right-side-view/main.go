@@ -46,15 +46,18 @@ type TreeNode struct {
 // Time: O(n).
 func rightSideView(root *TreeNode) []int {
 	res := []int{}
+	// an empty tree shows nothing
 	if root == nil {
 		return res
 	}
 
+	// the queue starts with level 0: only the root
 	queue := []*TreeNode{root}
 	for len(queue) > 0 {
 		size := len(queue) // number of nodes in this level
 
 		for i := 0; i < size; i++ {
+			// take the first node out of the queue
 			node := queue[0]
 			queue = queue[1:]
 
@@ -63,6 +66,8 @@ func rightSideView(root *TreeNode) []int {
 				res = append(res, node.Val)
 			}
 
+			// the children go to the back of the queue: they are the next level
+			// (left before right, so the rightmost node of a level is always last)
 			if node.Left != nil {
 				queue = append(queue, node.Left)
 			}

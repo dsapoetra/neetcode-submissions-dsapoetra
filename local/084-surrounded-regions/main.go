@@ -53,10 +53,12 @@ func solve(board [][]byte) {
 
 	// 1) mark the regions that touch the border
 	for r := 0; r < rows; r++ {
+		// left and right border
 		markSafe(board, r, 0)
 		markSafe(board, r, cols-1)
 	}
 	for c := 0; c < cols; c++ {
+		// top and bottom border
 		markSafe(board, 0, c)
 		markSafe(board, rows-1, c)
 	}
@@ -64,6 +66,7 @@ func solve(board [][]byte) {
 	// 2) and 3)
 	for r := 0; r < rows; r++ {
 		for c := 0; c < cols; c++ {
+			// still 'O' means it was not reached from the border
 			if board[r][c] == 'O' {
 				board[r][c] = 'X' // surrounded
 			} else if board[r][c] == 'S' {
@@ -75,10 +78,13 @@ func solve(board [][]byte) {
 
 // markSafe marks the 'O' at (r, c) and all 'O's connected to it with 'S'.
 func markSafe(board [][]byte, r int, c int) {
+	// stop: outside the board, or not an 'O' (an 'X', or already marked 'S')
 	if r < 0 || r >= len(board) || c < 0 || c >= len(board[0]) || board[r][c] != 'O' {
 		return
 	}
+	// mark it; this also stops us from visiting it again
 	board[r][c] = 'S'
+	// continue in the 4 directions
 	markSafe(board, r+1, c)
 	markSafe(board, r-1, c)
 	markSafe(board, r, c+1)

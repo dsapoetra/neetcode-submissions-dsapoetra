@@ -33,20 +33,29 @@ import (
 
 // ===================== Solution =====================
 
+// Idea: the answer for position i is
+// (product of everything left of i) * (product of everything right of i).
+// Build the left products in one pass and the right products in a second
+// pass. No division is needed, so zeros in the list are not a problem.
+// Time: O(n).
 func productExceptSelf(nums []int) []int {
 	res := make([]int, len(nums))
 
 	// Pass 1: res[i] = product of everything LEFT of i
+	// left starts at 1 because nothing is left of the first number
 	left := 1
 	for i := 0; i < len(nums); i++ {
 		res[i] = left
+		// include nums[i] for the next position
 		left *= nums[i]
 	}
 
 	// Pass 2: multiply in the product of everything RIGHT of i
+	// right starts at 1 because nothing is right of the last number
 	right := 1
 	for i := len(nums) - 1; i >= 0; i-- {
 		res[i] *= right
+		// include nums[i] for the next position (one step to the left)
 		right *= nums[i]
 	}
 

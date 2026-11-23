@@ -42,14 +42,18 @@ import (
 // shortest possible.
 // Time: O(n^2 * word length), fine for the small word lists here.
 func ladderLength(beginWord string, endWord string, wordList []string) int {
+	// used[i] is true once wordList[i] is in the chain; a word is never
+	// used twice (a second, later visit can only be a longer way)
 	used := make([]bool, len(wordList))
 	queue := []string{beginWord}
 	length := 1 // number of words in the chain so far
 
 	for len(queue) > 0 {
+		// the words we can reach with one more step
 		next := []string{}
 
 		for _, word := range queue {
+			// BFS reaches endWord for the first time on the shortest way
 			if word == endWord {
 				return length
 			}
@@ -63,6 +67,7 @@ func ladderLength(beginWord string, endWord string, wordList []string) int {
 			}
 		}
 
+		// nothing found in this round: continue with the words one step further
 		queue = next
 		length++
 	}
@@ -71,9 +76,11 @@ func ladderLength(beginWord string, endWord string, wordList []string) int {
 
 // differByOne is true if the two words differ in exactly one position.
 func differByOne(a string, b string) bool {
+	// words of different length cannot differ by just one letter
 	if len(a) != len(b) {
 		return false
 	}
+	// count the positions where the letters are not the same
 	different := 0
 	for i := 0; i < len(a); i++ {
 		if a[i] != b[i] {

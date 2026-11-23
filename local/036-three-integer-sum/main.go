@@ -44,15 +44,19 @@ import (
 // Skipping equal numbers avoids duplicate triplets.
 // Time: O(n^2).
 func threeSum(nums []int) [][]int {
+	// sorted numbers are needed for the two pointers, and they put
+	// equal numbers next to each other
 	sort.Ints(nums)
 	res := [][]int{}
 
+	// nums[i] is the first number of the triplet
 	for i := 0; i < len(nums)-2; i++ {
 		// same first number as before -> would give the same triplets
 		if i > 0 && nums[i] == nums[i-1] {
 			continue
 		}
 
+		// search the other two numbers in the part right of i
 		left := i + 1
 		right := len(nums) - 1
 		for left < right {
@@ -62,7 +66,10 @@ func threeSum(nums []int) [][]int {
 			} else if sum > 0 {
 				right-- // need a smaller sum
 			} else {
+				// found a triplet
 				res = append(res, []int{nums[i], nums[left], nums[right]})
+				// move both pointers: with only one moved the sum cannot be 0 again
+				// (unless the number is the same, and that would be a duplicate)
 				left++
 				right--
 				// skip the same second number

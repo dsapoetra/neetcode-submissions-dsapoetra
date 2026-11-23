@@ -38,6 +38,7 @@ import (
 // Time: O(n), extra space: O(n).
 func trap(height []int) int {
 	n := len(height)
+	// no bars, no water
 	if n == 0 {
 		return 0
 	}
@@ -46,7 +47,9 @@ func trap(height []int) int {
 	maxLeft := make([]int, n)
 	maxLeft[0] = height[0]
 	for i := 1; i < n; i++ {
+		// start with the tallest bar before i ...
 		maxLeft[i] = maxLeft[i-1]
+		// ... and replace it if bar i itself is taller
 		if height[i] > maxLeft[i] {
 			maxLeft[i] = height[i]
 		}
@@ -56,6 +59,7 @@ func trap(height []int) int {
 	maxRight := make([]int, n)
 	maxRight[n-1] = height[n-1]
 	for i := n - 2; i >= 0; i-- {
+		// same as above, but walking from right to left
 		maxRight[i] = maxRight[i+1]
 		if height[i] > maxRight[i] {
 			maxRight[i] = height[i]
@@ -63,11 +67,15 @@ func trap(height []int) int {
 	}
 
 	water := 0
+	// add up the water above every bar
 	for i := 0; i < n; i++ {
+		// the water level is the LOWER of the two walls
 		level := maxLeft[i]
 		if maxRight[i] < level {
 			level = maxRight[i]
 		}
+		// water = level minus the bar itself (never negative, because
+		// both walls are at least as tall as bar i)
 		water += level - height[i]
 	}
 	return water

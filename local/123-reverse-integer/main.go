@@ -50,17 +50,22 @@ func reverse(x int) int {
 
 	result := 0
 	for x != 0 {
+		// the last digit of x (negative if x is negative)
 		digit := x % 10
+		// remove the last digit from x
 		x /= 10
 
 		// would result*10 + digit leave the 32-bit range?
+		// too big: 2147483647 ends in 7, so a last digit above 7 does not fit
 		if result > maxInt32/10 || (result == maxInt32/10 && digit > 7) {
 			return 0
 		}
+		// too small: -2147483648 ends in 8, so a last digit below -8 does not fit
 		if result < minInt32/10 || (result == minInt32/10 && digit < -8) {
 			return 0
 		}
 
+		// safe: push the digit onto the end of the result
 		result = result*10 + digit
 	}
 	return result

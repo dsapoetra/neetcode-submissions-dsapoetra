@@ -44,19 +44,24 @@ import (
 //
 // Time: O(n).
 func canCompleteCircuit(gas []int, cost []int) int {
+	// step 1: add up all the gas and all the cost
 	totalGas := 0
 	totalCost := 0
 	for i := range gas {
 		totalGas += gas[i]
 		totalCost += cost[i]
 	}
+	// not enough gas for the whole circle, from any start
 	if totalGas < totalCost {
 		return -1
 	}
 
+	// step 2: find the start
+	// tank = gas left when we drive from "start" to station i
 	start := 0
 	tank := 0
 	for i := range gas {
+		// fill up at station i, then pay for the drive to the next station
 		tank += gas[i] - cost[i]
 		if tank < 0 {
 			// cannot get past station i: start fresh after it
@@ -64,6 +69,7 @@ func canCompleteCircuit(gas []int, cost []int) int {
 			tank = 0
 		}
 	}
+	// the total gas is enough, so the last start we tried is the answer
 	return start
 }
 

@@ -41,12 +41,14 @@ import (
 //
 // Time: O(n^2).
 func longestPalindrome(s string) string {
+	// where the best palindrome starts, and how long it is
 	bestStart := 0
 	bestLen := 0
 
 	for i := 0; i < len(s); i++ {
 		// odd length: center is letter i
 		left, right := growPalindrome(s, i, i)
+		// longer than the best so far: remember it
 		if right-left+1 > bestLen {
 			bestStart = left
 			bestLen = right - left + 1
@@ -59,12 +61,14 @@ func longestPalindrome(s string) string {
 			bestLen = right - left + 1
 		}
 	}
+	// cut the best palindrome out of the string
 	return s[bestStart : bestStart+bestLen]
 }
 
 // growPalindrome grows outwards from (left, right) while the letters match.
 // It returns the first and last index of the palindrome it found.
 func growPalindrome(s string, left int, right int) (int, int) {
+	// stop at the edge of the string, or when the two sides do not match
 	for left >= 0 && right < len(s) && s[left] == s[right] {
 		left--
 		right++

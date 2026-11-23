@@ -50,8 +50,10 @@ func numIslands(grid [][]byte) int {
 	count := 0
 	for r := 0; r < len(grid); r++ {
 		for c := 0; c < len(grid[0]); c++ {
+			// land that was not counted yet: a new island
 			if grid[r][c] == '1' {
 				count++
+				// remove the whole island from the grid
 				sinkIsland(grid, r, c)
 			}
 		}

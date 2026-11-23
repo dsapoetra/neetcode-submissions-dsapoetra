@@ -33,21 +33,32 @@ import (
 
 // ===================== Solution =====================
 
+// Idea: bucket sort. A number can appear at most len(nums) times, so make
+// one bucket for every possible count: freq[c] holds the numbers that
+// appear exactly c times. Then read the buckets from the highest count
+// down and take the first k numbers.
+// Time: O(n), no sorting needed.
 func topKFrequent(nums []int, k int) []int {
+	// count[number] = how many times the number appears
 	count := make(map[int]int)
+	// freq[c] = the numbers that appear exactly c times
+	// (+1 because a count can be as big as len(nums))
 	freq := make([][]int, len(nums)+1)
 
 	for _, num := range nums {
 		count[num]++
 	}
+	// put every number in the bucket of its count
 	for num, cnt := range count {
 		freq[cnt] = append(freq[cnt], num)
 	}
 
 	res := []int{}
+	// start at the biggest count, so the most frequent numbers come first
 	for i := len(freq) - 1; i > 0; i-- {
 		for _, num := range freq[i] {
 			res = append(res, num)
+			// we have k numbers, done
 			if len(res) == k {
 				return res
 			}

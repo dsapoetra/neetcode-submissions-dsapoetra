@@ -46,22 +46,26 @@ type TreeNode struct {
 // least that big.
 // Time: O(n).
 func goodNodes(root *TreeNode) int {
+	// the root is always good: nothing above it is bigger
 	return countGood(root, root.Val)
 }
 
 // countGood counts the good nodes in this subtree.
 // maxSoFar is the biggest value on the path from the root to this node.
 func countGood(node *TreeNode, maxSoFar int) int {
+	// no node here, nothing to count
 	if node == nil {
 		return 0
 	}
 
 	count := 0
+	// not smaller than everything above it?
 	if node.Val >= maxSoFar {
 		count = 1           // this node is good
 		maxSoFar = node.Val // and it is the new biggest value for the nodes below
 	}
 
+	// count the good nodes below, on both sides
 	count += countGood(node.Left, maxSoFar)
 	count += countGood(node.Right, maxSoFar)
 	return count

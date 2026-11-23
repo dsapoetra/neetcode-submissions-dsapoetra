@@ -43,20 +43,24 @@ import (
 // are only a few stones. (A max-heap would be faster, but needs more code.)
 func lastStoneWeight(stones []int) int {
 	for len(stones) > 1 {
+		// after sorting, the two heaviest stones are at the end
 		sort.Ints(stones)
 
 		heaviest := stones[len(stones)-1]
 		second := stones[len(stones)-2]
 		stones = stones[:len(stones)-2] // remove both
 
+		// equal stones destroy each other, nothing goes back
 		if heaviest != second {
 			stones = append(stones, heaviest-second) // what is left of the heavier one
 		}
 	}
 
+	// no stone left
 	if len(stones) == 0 {
 		return 0
 	}
+	// exactly one stone left
 	return stones[0]
 }
 

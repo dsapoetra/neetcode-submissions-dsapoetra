@@ -49,12 +49,15 @@ func jump(nums []int) int {
 
 	// we stop before the last index: standing there needs no more jumps
 	for i := 0; i < len(nums)-1; i++ {
+		// from position i we can reach i + nums[i]: keep the farthest
 		if i+nums[i] > farthest {
 			farthest = i + nums[i]
 		}
 
+		// we are at the end of the range of the current jump
 		if i == currentEnd {
 			jumps++ // one more jump
+			// the next jump takes us as far as possible
 			currentEnd = farthest
 		}
 	}

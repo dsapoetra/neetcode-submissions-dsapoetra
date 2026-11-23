@@ -49,12 +49,15 @@ import (
 func swimInWater(grid [][]int) int {
 	n := len(grid)
 
+	// the answer is somewhere between time 0 and time n*n-1
 	left := 0
 	right := n*n - 1 // the heights are 0 .. n*n-1, so this time always works
 
 	for left < right {
+		// try the time in the middle
 		mid := (left + right) / 2
 
+		// a fresh "visited" grid for every try
 		visited := make([][]bool, n)
 		for i := range visited {
 			visited[i] = make([]bool, n)
@@ -66,6 +69,7 @@ func swimInWater(grid [][]int) int {
 			left = mid + 1 // too early
 		}
 	}
+	// left == right: the first time that works
 	return left
 }
 
@@ -73,14 +77,19 @@ func swimInWater(grid [][]int) int {
 // using only cells with height <= time.
 func canSwim(grid [][]int, visited [][]bool, r int, c int, time int) bool {
 	n := len(grid)
+	// stop: outside the grid, already visited, or the water is too low
+	// to stand on this cell at this time
 	if r < 0 || r >= n || c < 0 || c >= n || visited[r][c] || grid[r][c] > time {
 		return false
 	}
+	// reached the bottom-right cell
 	if r == n-1 && c == n-1 {
 		return true
 	}
+	// mark it, so we do not walk in circles
 	visited[r][c] = true
 
+	// try all four directions; one working way is enough
 	return canSwim(grid, visited, r+1, c, time) ||
 		canSwim(grid, visited, r-1, c, time) ||
 		canSwim(grid, visited, r, c+1, time) ||

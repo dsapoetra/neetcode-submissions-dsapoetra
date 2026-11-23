@@ -45,22 +45,27 @@ func searchMatrix(matrix [][]int, target int) bool {
 	rows := len(matrix)
 	cols := len(matrix[0])
 
+	// left and right are positions in the "one long list" (0 = top left)
 	left := 0
 	right := rows*cols - 1
 
 	for left <= right {
+		// look at the middle position and turn it into (row, column)
 		mid := (left + right) / 2
 		value := matrix[mid/cols][mid%cols]
 
 		if value == target {
 			return true
 		}
+		// the middle value is too small: the target can only be to the right
 		if value < target {
 			left = mid + 1
 		} else {
+			// the middle value is too big: the target can only be to the left
 			right = mid - 1
 		}
 	}
+	// the search range is empty, the target is not in the matrix
 	return false
 }
 

@@ -60,6 +60,7 @@ func Constructor() Codec {
 
 // Serializes a tree to a single string.
 func (this *Codec) serialize(root *TreeNode) string {
+	// an empty child is written as "N"
 	if root == nil {
 		return "N"
 	}
@@ -69,18 +70,22 @@ func (this *Codec) serialize(root *TreeNode) string {
 
 // Deserializes your encoded data to tree.
 func (this *Codec) deserialize(data string) *TreeNode {
+	// cut the text back into the single values
 	parts := strings.Split(data, ",")
 	index := 0 // the next value to read
 
+	// build reads the next value and returns the subtree that starts there.
 	var build func() *TreeNode
 	build = func() *TreeNode {
 		value := parts[index]
 		index++
 
+		// "N" was an empty child
 		if value == "N" {
 			return nil
 		}
 
+		// a real node: make it, then read its two subtrees
 		number, _ := strconv.Atoi(value)
 		node := &TreeNode{Val: number}
 		node.Left = build()  // same order as serialize: left first
@@ -88,6 +93,7 @@ func (this *Codec) deserialize(data string) *TreeNode {
 		return node
 	}
 
+	// the first value is the root
 	return build()
 }
 

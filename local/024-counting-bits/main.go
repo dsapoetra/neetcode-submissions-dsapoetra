@@ -36,7 +36,9 @@ import (
 // Time: O(n).
 func countBits(n int) []int {
 	bits := make([]int, n+1) // bits[0] is 0
+	// go from small to big, so bits[i/2] is always ready
 	for i := 1; i <= n; i++ {
+		// the ones in i without its last bit, plus its last bit (0 or 1)
 		bits[i] = bits[i/2] + i%2
 	}
 	return bits

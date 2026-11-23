@@ -44,16 +44,21 @@ func minCostClimbingStairs(cost []int) int {
 	n := len(cost)
 	reach := make([]int, n+1) // reach[0] = reach[1] = 0: free starting points
 
+	// steps 0 and 1 are free, so start at step 2
 	for i := 2; i <= n; i++ {
+		// come from the step right below and pay for that step
 		fromOneBelow := reach[i-1] + cost[i-1]
+		// or come from two steps below and pay for that step
 		fromTwoBelow := reach[i-2] + cost[i-2]
 
+		// keep the cheaper of the two ways
 		if fromOneBelow < fromTwoBelow {
 			reach[i] = fromOneBelow
 		} else {
 			reach[i] = fromTwoBelow
 		}
 	}
+	// n is one past the last step: the top of the stairs
 	return reach[n]
 }
 

@@ -53,20 +53,27 @@ type Twitter struct {
 	follows map[int]map[int]bool // follows[a][b] = true means a follows b
 }
 
+// Constructor makes an empty Twitter: no tweets, nobody follows anybody.
 func Constructor() Twitter {
 	return Twitter{follows: map[int]map[int]bool{}}
 }
 
+// PostTweet adds the tweet at the end of the list, so the list stays
+// ordered from oldest to newest.
 func (this *Twitter) PostTweet(userId int, tweetId int) {
 	this.tweets = append(this.tweets, tweet{userId, tweetId})
 }
 
+// GetNewsFeed returns the (at most) 10 newest tweet ids from the user
+// and from the people the user follows, newest first.
 func (this *Twitter) GetNewsFeed(userId int) []int {
 	feed := []int{}
 
 	// newest tweets are at the end of the list
 	for i := len(this.tweets) - 1; i >= 0 && len(feed) < 10; i-- {
 		author := this.tweets[i].userId
+		// a user always sees their own tweets, plus those of people they follow
+		// (a missing map entry gives false, so unknown users are no problem)
 		if author == userId || this.follows[userId][author] {
 			feed = append(feed, this.tweets[i].tweetId)
 		}
@@ -74,13 +81,17 @@ func (this *Twitter) GetNewsFeed(userId int) []int {
 	return feed
 }
 
+// Follow makes followerId see the tweets of followeeId.
 func (this *Twitter) Follow(followerId int, followeeId int) {
+	// the first time this user follows someone: create their set
 	if this.follows[followerId] == nil {
 		this.follows[followerId] = map[int]bool{}
 	}
 	this.follows[followerId][followeeId] = true
 }
 
+// Unfollow removes followeeId from the set. Nothing happens if followerId
+// was not following them (delete on a missing entry is safe).
 func (this *Twitter) Unfollow(followerId int, followeeId int) {
 	delete(this.follows[followerId], followeeId)
 }

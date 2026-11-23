@@ -48,25 +48,31 @@ func Constructor() MinStack {
 	return MinStack{}
 }
 
+// Push adds val on top, and stores the new minimum next to it.
 func (this *MinStack) Push(val int) {
+	// the new minimum is val, unless the old minimum is smaller
 	min := val
 	// if the stack is not empty, compare with the minimum so far
 	if len(this.mins) > 0 && this.mins[len(this.mins)-1] < min {
 		min = this.mins[len(this.mins)-1]
 	}
+	// both stacks grow together, so they always have the same height
 	this.values = append(this.values, val)
 	this.mins = append(this.mins, min)
 }
 
+// Pop removes the top value, and the minimum that belonged to it.
 func (this *MinStack) Pop() {
 	this.values = this.values[:len(this.values)-1]
 	this.mins = this.mins[:len(this.mins)-1]
 }
 
+// Top returns the last pushed value without removing it.
 func (this *MinStack) Top() int {
 	return this.values[len(this.values)-1]
 }
 
+// GetMin returns the smallest value in the stack: the top of mins.
 func (this *MinStack) GetMin() int {
 	return this.mins[len(this.mins)-1]
 }

@@ -40,16 +40,19 @@ func countComponents(n int, edges [][]int) int {
 	// build the neighbor list of every node
 	neighbors := make([][]int, n)
 	for _, edge := range edges {
+		// an edge works in both directions: a is next to b, and b is next to a
 		a, b := edge[0], edge[1]
 		neighbors[a] = append(neighbors[a], b)
 		neighbors[b] = append(neighbors[b], a)
 	}
 
+	// seen[x] is true once node x belongs to a counted component
 	seen := make([]bool, n)
 	count := 0
 	for node := 0; node < n; node++ {
 		if !seen[node] {
 			count++ // found a new component
+			// mark the whole component, so its other nodes are not counted again
 			visit(node, neighbors, seen)
 		}
 	}
@@ -58,8 +61,10 @@ func countComponents(n int, edges [][]int) int {
 
 // visit marks node and everything connected to it as seen (DFS).
 func visit(node int, neighbors [][]int, seen []bool) {
+	// mark first, so we never come back to this node (no endless loop)
 	seen[node] = true
 	for _, next := range neighbors[node] {
+		// go on to every neighbor that was not visited yet
 		if !seen[next] {
 			visit(next, neighbors, seen)
 		}

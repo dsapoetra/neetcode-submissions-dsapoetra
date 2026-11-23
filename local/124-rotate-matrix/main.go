@@ -54,12 +54,14 @@ func rotate(matrix [][]int) {
 	// step 1: transpose (only the part above the diagonal, or we swap twice)
 	for r := 0; r < n; r++ {
 		for c := r + 1; c < n; c++ {
+			// swap the cell with its mirror on the other side of the diagonal
 			matrix[r][c], matrix[c][r] = matrix[c][r], matrix[r][c]
 		}
 	}
 
 	// step 2: reverse every row
 	for r := 0; r < n; r++ {
+		// two pointers: swap the outer pair, then move inwards
 		left, right := 0, n-1
 		for left < right {
 			matrix[r][left], matrix[r][right] = matrix[r][right], matrix[r][left]

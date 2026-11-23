@@ -66,13 +66,16 @@ func islandsAndTreasure(grid [][]int) {
 		}
 	}
 
+	// the four neighbors: down, up, right, left
 	directions := [][2]int{{1, 0}, {-1, 0}, {0, 1}, {0, -1}}
 
 	for len(queue) > 0 {
+		// take the first cell out of the queue (the closest ones come first)
 		cell := queue[0]
 		queue = queue[1:]
 
 		for _, d := range directions {
+			// (r, c) is the neighbor in this direction
 			r := cell[0] + d[0]
 			c := cell[1] + d[1]
 
@@ -82,6 +85,7 @@ func islandsAndTreasure(grid [][]int) {
 			}
 
 			grid[r][c] = grid[cell[0]][cell[1]] + 1 // one step further than the cell we came from
+			// its own neighbors are handled later, one step further away
 			queue = append(queue, [2]int{r, c})
 		}
 	}

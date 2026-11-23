@@ -37,6 +37,7 @@ func minCostConnectPoints(points [][]int) int {
 	const inf = 1000000000
 	n := len(points)
 
+	// inGroup[p] is true once point p is connected
 	inGroup := make([]bool, n)
 	cost := make([]int, n)
 	for i := range cost {
@@ -49,25 +50,30 @@ func minCostConnectPoints(points [][]int) int {
 		// find the cheapest point that is not in the group yet
 		best := -1
 		for p := 0; p < n; p++ {
+			// take p if it is the first free point we see, or cheaper than the best so far
 			if !inGroup[p] && (best == -1 || cost[p] < cost[best]) {
 				best = p
 			}
 		}
 
 		// add it
+		// pay its cost and mark it as connected
 		inGroup[best] = true
 		total += cost[best]
 
 		// maybe the new point is a cheaper way to reach the others
 		for p := 0; p < n; p++ {
 			if !inGroup[p] {
+				// Manhattan distance: difference in x plus difference in y
 				distance := absDiff(points[best][0], points[p][0]) + absDiff(points[best][1], points[p][1])
+				// cheaper than every connection we knew for p: remember it
 				if distance < cost[p] {
 					cost[p] = distance
 				}
 			}
 		}
 	}
+	// all points are in the group
 	return total
 }
 

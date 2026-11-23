@@ -38,8 +38,10 @@ import (
 // When we reach the end of the string, the pieces form one answer.
 func partition(s string) [][]string {
 	res := [][]string{}
+	// the pieces we have chosen so far
 	current := []string{}
 
+	// build cuts the rest of the string, s[start:], into palindromes.
 	var build func(start int)
 	build = func(start int) {
 		if start == len(s) {
@@ -48,6 +50,7 @@ func partition(s string) [][]string {
 			return
 		}
 
+		// try every end position for the next piece
 		for end := start; end < len(s); end++ {
 			if isPalindromePiece(s, start, end) {
 				current = append(current, s[start:end+1]) // choose this piece
@@ -63,6 +66,7 @@ func partition(s string) [][]string {
 
 // isPalindromePiece checks if s[left..right] reads the same in both directions.
 func isPalindromePiece(s string, left int, right int) bool {
+	// compare the outer letters and move inwards
 	for left < right {
 		if s[left] != s[right] {
 			return false
@@ -70,6 +74,7 @@ func isPalindromePiece(s string, left int, right int) bool {
 		left++
 		right--
 	}
+	// all pairs matched
 	return true
 }
 

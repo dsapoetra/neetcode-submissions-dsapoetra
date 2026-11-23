@@ -43,7 +43,9 @@ import (
 // A negative n means 1 / x^(-n).
 // Time: O(log n).
 func myPow(x float64, n int) float64 {
+	// negative power: compute the positive power and take 1 / result
 	if n < 0 {
+		// (-n is now positive)
 		return 1 / power(x, -n)
 	}
 	return power(x, n)
@@ -51,14 +53,19 @@ func myPow(x float64, n int) float64 {
 
 // power computes x^n for n >= 0.
 func power(x float64, n int) float64 {
+	// anything to the power 0 is 1; this also stops the recursion
 	if n == 0 {
 		return 1
 	}
 
+	// compute the half power only ONCE and reuse it
+	// (n/2 is rounded down, so for n = 5 this is x^2)
 	half := power(x, n/2)
+	// even n: x^n = half * half
 	if n%2 == 0 {
 		return half * half
 	}
+	// odd n: one x is missing because n/2 was rounded down
 	return half * half * x
 }
 

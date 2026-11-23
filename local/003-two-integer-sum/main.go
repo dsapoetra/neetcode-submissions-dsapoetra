@@ -33,20 +33,31 @@ import (
 
 // ===================== Solution =====================
 
+// Idea: for each number we know which partner it needs: target - num.
+// Keep a map of the numbers we have already passed (number -> its index).
+// If the partner is in the map, we have the answer.
+// Time: O(n), one walk through the list.
 func twoSum(nums []int, target int) []int {
+	// indexOf[number] = the index where we saw that number
 	indexOf := make(map[int]int)
 
 	for i, num := range nums {
+		// the number that, added to num, gives target
 		need := target - num
 
+		// did we already see the partner earlier in the list?
 		j, ok := indexOf[need]
 		if ok {
+			// j was seen first, so it is the smaller index
 			return []int{j, i}
 		}
 
+		// remember this number only AFTER the check, so a number is
+		// never paired with itself
 		indexOf[num] = i
 	}
 
+	// no pair adds up to target
 	return nil
 }
 

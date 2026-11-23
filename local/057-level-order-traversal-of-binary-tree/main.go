@@ -45,12 +45,15 @@ type TreeNode struct {
 // Time: O(n).
 func levelOrder(root *TreeNode) [][]int {
 	res := [][]int{}
+	// an empty tree has no levels
 	if root == nil {
 		return res
 	}
 
+	// the queue starts with level 0: only the root
 	queue := []*TreeNode{root}
 	for len(queue) > 0 {
+		// the values of this level
 		level := []int{}
 		size := len(queue) // number of nodes in this level
 
@@ -68,6 +71,7 @@ func levelOrder(root *TreeNode) [][]int {
 				queue = append(queue, node.Right)
 			}
 		}
+		// the level is complete
 		res = append(res, level)
 	}
 	return res

@@ -36,15 +36,24 @@ import (
 
 // ===================== Solution =====================
 
+// Idea: anagrams become the same word when their letters are sorted
+// ("bca" and "cab" both become "abc"). Use the sorted word as a map key
+// and put every word in the group of its key.
+// Time: O(n * k log k), n = number of words, k = length of a word.
 func groupAnagrams(strs []string) [][]string {
+	// groups[sorted word] = all words that have exactly these letters
 	groups := map[string][]string{}
 	for _, w := range strs {
+		// sort the letters of the word to get its key
 		r := []rune(w)
 		slices.Sort(r)
 		key := string(r)
+		// add the original word to the group of that key
 		groups[key] = append(groups[key], w)
 	}
 	// {"abc": ["abc", "bca", "cab"]}
+
+	// the answer is only the groups, the keys are not needed any more
 	result := make([][]string, 0, len(groups))
 	for _, group := range groups {
 		result = append(result, group)

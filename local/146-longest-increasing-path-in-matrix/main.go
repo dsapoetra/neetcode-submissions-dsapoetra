@@ -48,20 +48,25 @@ func longestIncreasingPath(matrix [][]int) int {
 		memo[i] = make([]int, cols)
 	}
 
+	// the four neighbors: down, up, right, left
 	directions := [][2]int{{1, 0}, {-1, 0}, {0, 1}, {0, -1}}
 
 	// longestFrom returns the length of the longest increasing path starting at (r, c).
 	var longestFrom func(r int, c int) int
 	longestFrom = func(r int, c int) int {
+		// already computed: reuse the answer
 		if memo[r][c] != 0 {
 			return memo[r][c]
 		}
 
 		best := 1 // the cell alone
 		for _, d := range directions {
+			// (nr, nc) is the neighbor in this direction
 			nr := r + d[0]
 			nc := c + d[1]
+			// inside the grid AND bigger than this cell: we may step there
 			if nr >= 0 && nr < rows && nc >= 0 && nc < cols && matrix[nr][nc] > matrix[r][c] {
+				// this cell + the longest path that starts at the neighbor
 				length := 1 + longestFrom(nr, nc)
 				if length > best {
 					best = length
@@ -69,10 +74,12 @@ func longestIncreasingPath(matrix [][]int) int {
 			}
 		}
 
+		// remember the answer for this cell
 		memo[r][c] = best
 		return best
 	}
 
+	// the path may start anywhere: try every cell and keep the longest
 	answer := 0
 	for r := 0; r < rows; r++ {
 		for c := 0; c < cols; c++ {

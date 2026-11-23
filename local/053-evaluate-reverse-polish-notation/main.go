@@ -40,6 +40,7 @@ func evalRPN(tokens []string) int {
 	stack := []int{}
 
 	for _, token := range tokens {
+		// is this token an operator?
 		if token == "+" || token == "-" || token == "*" || token == "/" {
 			// pop the right side, then the left side
 			right := stack[len(stack)-1]
@@ -47,6 +48,7 @@ func evalRPN(tokens []string) int {
 			stack = stack[:len(stack)-2]
 
 			result := 0
+			// calculate "left operator right"
 			if token == "+" {
 				result = left + right
 			} else if token == "-" {
@@ -56,12 +58,15 @@ func evalRPN(tokens []string) int {
 			} else {
 				result = left / right // Go cuts off the decimals (rounds toward zero)
 			}
+			// the result goes back on the stack; it can be used by a later operator
 			stack = append(stack, result)
 		} else {
+			// a number: turn the text into an int and push it
 			number, _ := strconv.Atoi(token)
 			stack = append(stack, number)
 		}
 	}
+	// at the end only one number is left: the answer
 	return stack[0]
 }
 

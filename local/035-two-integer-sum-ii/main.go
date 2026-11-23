@@ -36,6 +36,7 @@ import (
 // The answer uses positions that start at 1, not 0.
 // Time: O(n), no extra memory.
 func twoSum(numbers []int, target int) []int {
+	// left starts at the smallest number, right at the biggest
 	left := 0
 	right := len(numbers) - 1
 
@@ -45,11 +46,14 @@ func twoSum(numbers []int, target int) []int {
 			return []int{left + 1, right + 1} // positions start at 1
 		}
 		if sum < target {
+			// too small: the only way to get a bigger sum is a bigger left number
 			left++
 		} else {
+			// too big: the only way to get a smaller sum is a smaller right number
 			right--
 		}
 	}
+	// the pointers met, no pair found (the problem says this never happens)
 	return []int{}
 }
 

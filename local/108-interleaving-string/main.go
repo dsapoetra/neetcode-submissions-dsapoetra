@@ -47,10 +47,12 @@ import (
 //
 // Time: O(len(s1) * len(s2)).
 func isInterleave(s1 string, s2 string, s3 string) bool {
+	// the lengths must add up, or s3 cannot be built from s1 and s2
 	if len(s1)+len(s2) != len(s3) {
 		return false
 	}
 
+	// ok[i][j]: see above (everything starts as false)
 	ok := make([][]bool, len(s1)+1)
 	for i := range ok {
 		ok[i] = make([]bool, len(s2)+1)
@@ -69,6 +71,7 @@ func isInterleave(s1 string, s2 string, s3 string) bool {
 			}
 		}
 	}
+	// all of s1 and all of s2 used
 	return ok[len(s1)][len(s2)]
 }
 

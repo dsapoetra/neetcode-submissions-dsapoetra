@@ -47,6 +47,7 @@ func validTree(n int, edges [][]int) bool {
 	// build the neighbor list of every node
 	neighbors := make([][]int, n)
 	for _, edge := range edges {
+		// an edge works in both directions
 		a, b := edge[0], edge[1]
 		neighbors[a] = append(neighbors[a], b)
 		neighbors[b] = append(neighbors[b], a)
@@ -61,13 +62,16 @@ func validTree(n int, edges [][]int) bool {
 			return false // a node was not reached
 		}
 	}
+	// n-1 edges and every node reached: it is a tree
 	return true
 }
 
 // visit marks node and everything connected to it as seen (DFS).
 func visit(node int, neighbors [][]int, seen []bool) {
+	// mark first, so we never come back to this node
 	seen[node] = true
 	for _, next := range neighbors[node] {
+		// go on to every neighbor that was not visited yet
 		if !seen[next] {
 			visit(next, neighbors, seen)
 		}

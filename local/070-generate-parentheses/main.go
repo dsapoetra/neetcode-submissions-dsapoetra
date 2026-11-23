@@ -42,20 +42,26 @@ import (
 func generateParenthesis(n int) []string {
 	res := []string{}
 
+	// build adds one bracket at a time to current.
+	// open / closed = how many "(" and ")" are already in current
 	var build func(current string, open int, closed int)
 	build = func(current string, open int, closed int) {
+		// n pairs means 2*n characters: the string is finished
 		if len(current) == 2*n {
 			res = append(res, current)
 			return
 		}
+		// option 1: add "(" if we still have some left
 		if open < n {
 			build(current+"(", open+1, closed)
 		}
+		// option 2: add ")" if there is an open bracket to close
 		if closed < open {
 			build(current+")", open, closed+1)
 		}
 	}
 
+	// start with an empty string and no brackets used
 	build("", 0, 0)
 	return res
 }

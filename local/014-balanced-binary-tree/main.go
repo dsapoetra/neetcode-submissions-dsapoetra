@@ -47,15 +47,18 @@ type TreeNode struct {
 // only once.
 // Time: O(n).
 func isBalanced(root *TreeNode) bool {
+	// -1 is the "not balanced" signal, any other number is a real height
 	return balancedHeight(root) != -1
 }
 
 // balancedHeight returns the height of the tree, or -1 if it is not balanced.
 func balancedHeight(node *TreeNode) int {
+	// an empty tree has height 0 (and is balanced)
 	if node == nil {
 		return 0
 	}
 
+	// heights of the two sides (or -1 if a side is not balanced)
 	left := balancedHeight(node.Left)
 	right := balancedHeight(node.Right)
 
@@ -69,6 +72,7 @@ func balancedHeight(node *TreeNode) int {
 		return -1
 	}
 
+	// balanced here: the height is the taller side plus this node
 	if left > right {
 		return left + 1
 	}

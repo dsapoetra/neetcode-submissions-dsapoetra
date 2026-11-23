@@ -44,15 +44,18 @@ func uniquePaths(m int, n int) int {
 		ways[r] = make([]int, n)
 	}
 
+	// fill the grid row by row, so "above" and "left" are always ready
 	for r := 0; r < m; r++ {
 		for c := 0; c < n; c++ {
 			if r == 0 || c == 0 {
 				ways[r][c] = 1 // top row or left column: only one way
 			} else {
+				// from above + from the left
 				ways[r][c] = ways[r-1][c] + ways[r][c-1]
 			}
 		}
 	}
+	// the bottom-right cell is the goal
 	return ways[m-1][n-1]
 }
 

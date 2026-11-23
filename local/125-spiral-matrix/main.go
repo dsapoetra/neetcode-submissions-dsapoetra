@@ -38,6 +38,7 @@ import (
 // Time: O(rows * cols).
 func spiralOrder(matrix [][]int) []int {
 	res := []int{}
+	// the four walls: the part between them is not visited yet
 	top, bottom := 0, len(matrix)-1
 	left, right := 0, len(matrix[0])-1
 
@@ -46,12 +47,14 @@ func spiralOrder(matrix [][]int) []int {
 		for c := left; c <= right; c++ {
 			res = append(res, matrix[top][c])
 		}
+		// the top row is done: move the top wall down
 		top++
 
 		// go down along the right column
 		for r := top; r <= bottom; r++ {
 			res = append(res, matrix[r][right])
 		}
+		// the right column is done: move the right wall to the left
 		right--
 
 		// go left along the bottom row (only if there is still a row left)
@@ -59,6 +62,7 @@ func spiralOrder(matrix [][]int) []int {
 			for c := right; c >= left; c-- {
 				res = append(res, matrix[bottom][c])
 			}
+			// the bottom row is done: move the bottom wall up
 			bottom--
 		}
 
@@ -67,6 +71,7 @@ func spiralOrder(matrix [][]int) []int {
 			for r := bottom; r >= top; r-- {
 				res = append(res, matrix[r][left])
 			}
+			// the left column is done: move the left wall to the right
 			left++
 		}
 	}

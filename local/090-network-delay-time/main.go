@@ -48,11 +48,16 @@ func networkDelayTime(times [][]int, n int, k int) int {
 	for i := range dist {
 		dist[i] = inf
 	}
+	// the signal starts at k, so k gets it at time 0
 	dist[k] = 0
 
+	// n-1 rounds are enough (see above)
 	for round := 0; round < n-1; round++ {
 		for _, edge := range times {
+			// one edge: the signal needs "time" to travel from "from" to "to"
 			from, to, time := edge[0], edge[1], edge[2]
+			// only if "from" already got the signal,
+			// and only if this way is faster than the best known way to "to"
 			if dist[from] != inf && dist[from]+time < dist[to] {
 				dist[to] = dist[from] + time
 			}
@@ -69,6 +74,7 @@ func networkDelayTime(times [][]int, n int, k int) int {
 			slowest = dist[node]
 		}
 	}
+	// every node got the signal; the last one got it at time "slowest"
 	return slowest
 }
 

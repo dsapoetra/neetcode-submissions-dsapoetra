@@ -40,6 +40,7 @@ import (
 // used twice in the same round.
 // Time: O(n * total / 2).
 func canPartition(nums []int) bool {
+	// add up all the numbers
 	total := 0
 	for _, num := range nums {
 		total += num
@@ -53,12 +54,15 @@ func canPartition(nums []int) bool {
 	possible[0] = true // taking nothing gives sum 0
 
 	for _, num := range nums {
+		// sum - num was possible before, so with this number sum is possible.
+		// Sums smaller than num cannot use this number, so we stop there.
 		for sum := half; sum >= num; sum-- {
 			if possible[sum-num] {
 				possible[sum] = true
 			}
 		}
 	}
+	// can some numbers add up to exactly half? Then the rest is the other half
 	return possible[half]
 }
 

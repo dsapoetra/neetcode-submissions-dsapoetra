@@ -33,25 +33,36 @@ import (
 
 // ===================== Solution =====================
 
+// Idea: two pointers, one at each end, walking towards the middle.
+// Skip everything that is not a letter or a digit, then compare the two
+// characters without looking at upper/lower case.
+// Time: O(n), no extra memory.
 func isPalindrome(s string) bool {
+	// l starts at the first character, r at the last
 	l, r := 0, len(s)-1
 
 	for l < r {
+		// move l to the right until it stands on a letter or digit
 		for l < r && !isAlphaNum(rune(s[l])) {
 			l++
 		}
+		// move r to the left until it stands on a letter or digit
 		for r > l && !isAlphaNum(rune(s[r])) {
 			r--
 		}
+		// the two sides must match ('A' and 'a' count as the same)
 		if unicode.ToLower(rune(s[l])) != unicode.ToLower(rune(s[r])) {
 			return false
 		}
+		// this pair is fine, step both pointers inwards
 		l++
 		r--
 	}
+	// the pointers met and every pair matched
 	return true
 }
 
+// isAlphaNum returns true if c is a letter or a digit.
 func isAlphaNum(c rune) bool {
 	return unicode.IsLetter(c) || unicode.IsDigit(c)
 }

@@ -39,6 +39,7 @@ import (
 // so always move the shorter wall and hope for a taller one.
 // Time: O(n).
 func maxArea(heights []int) int {
+	// start with the two outer walls: the widest container
 	left := 0
 	right := len(heights) - 1
 	best := 0
@@ -50,6 +51,7 @@ func maxArea(heights []int) int {
 			height = heights[right]
 		}
 
+		// area = height * width
 		area := height * (right - left)
 		if area > best {
 			best = area
@@ -57,8 +59,10 @@ func maxArea(heights []int) int {
 
 		// move the shorter wall inwards
 		if heights[left] < heights[right] {
+			// the left wall is the shorter one: try the next wall on the left side
 			left++
 		} else {
+			// the right wall is shorter (or equal): try the next one on the right
 			right--
 		}
 	}

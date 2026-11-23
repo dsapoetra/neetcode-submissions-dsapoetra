@@ -36,6 +36,7 @@ import (
 // Searching a '.' can be ANY letter, so we try every child.
 
 type wordNode struct {
+	// next letter -> the node for that letter
 	children map[byte]*wordNode
 	isWord   bool // true if a word ends at this node
 }
@@ -44,28 +45,36 @@ type WordDictionary struct {
 	root *wordNode
 }
 
+// newWordNode makes an empty node with a ready-to-use children map.
 func newWordNode() *wordNode {
 	return &wordNode{children: map[byte]*wordNode{}}
 }
 
+// Constructor makes an empty dictionary: only a root, which holds no letter.
 func Constructor() WordDictionary {
 	return WordDictionary{root: newWordNode()}
 }
 
 // AddWord walks down letter by letter, creating nodes that do not exist yet.
 func (this *WordDictionary) AddWord(word string) {
+	// cur is the node we are standing on; start at the root
 	cur := this.root
 	for i := 0; i < len(word); i++ {
 		letter := word[i]
+		// no node for this letter yet: create it
 		if cur.children[letter] == nil {
 			cur.children[letter] = newWordNode()
 		}
+		// step down to the node of this letter
 		cur = cur.children[letter]
 	}
+	// mark the end of the word
 	cur.isWord = true
 }
 
+// Search returns true if word is in the dictionary. A '.' matches any letter.
 func (this *WordDictionary) Search(word string) bool {
+	// start at the root with the first letter (index 0)
 	return searchNode(this.root, word, 0)
 }
 
@@ -81,18 +90,22 @@ func searchNode(node *wordNode, word string, index int) bool {
 	if letter == '.' {
 		// '.' matches any letter: try every child
 		for _, child := range node.children {
+			// one child that leads to a match is enough
 			if searchNode(child, word, index+1) {
 				return true
 			}
 		}
+		// no child worked
 		return false
 	}
 
 	// normal letter: there is only one child to follow
 	child := node.children[letter]
+	// the letter is not in the trie: no match
 	if child == nil {
 		return false
 	}
+	// the letter matches: continue with the next letter
 	return searchNode(child, word, index+1)
 }
 

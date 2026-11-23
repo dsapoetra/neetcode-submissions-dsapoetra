@@ -38,6 +38,7 @@ import (
 // the biggest product (high) and the smallest product (low).
 // Time: O(n).
 func maxProduct(nums []int) int {
+	// the answer has at least one number, so start with the first one
 	best := nums[0]
 	high := 1 // biggest product of a subarray ending at the previous number
 	low := 1  // smallest product of a subarray ending at the previous number
@@ -48,6 +49,7 @@ func maxProduct(nums []int) int {
 		a := high * n
 		b := low * n
 
+		// the new high: the biggest of n, a and b
 		high = n
 		if a > high {
 			high = a
@@ -56,6 +58,7 @@ func maxProduct(nums []int) int {
 			high = b
 		}
 
+		// the new low: the smallest of n, a and b
 		low = n
 		if a < low {
 			low = a
@@ -64,6 +67,7 @@ func maxProduct(nums []int) int {
 			low = b
 		}
 
+		// the best subarray can end anywhere: keep the biggest high
 		if high > best {
 			best = high
 		}

@@ -40,6 +40,7 @@ import (
 // them. Example "23": [""] -> ["a","b","c"] -> ["ad","ae","af","bd",...]
 // Time: O(4^n), a digit has at most 4 letters.
 func letterCombinations(digits string) []string {
+	// no digits means no combinations (not one empty string)
 	if digits == "" {
 		return []string{}
 	}
@@ -47,16 +48,20 @@ func letterCombinations(digits string) []string {
 	// letters[d] = the letters on phone key d
 	letters := []string{"", "", "abc", "def", "ghi", "jkl", "mno", "pqrs", "tuv", "wxyz"}
 
+	// res = all the strings built so far; one empty string to start
 	res := []string{""}
 	for i := 0; i < len(digits); i++ {
+		// digits[i] is a character like '2'; minus '0' gives the number 2
 		options := letters[digits[i]-'0']
 
+		// extend every string we have with every letter of this digit
 		next := []string{}
 		for _, prefix := range res {
 			for _, letter := range options {
 				next = append(next, prefix+string(letter))
 			}
 		}
+		// the longer strings replace the old ones
 		res = next
 	}
 	return res

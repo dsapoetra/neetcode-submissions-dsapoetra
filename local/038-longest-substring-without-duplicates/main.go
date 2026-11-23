@@ -39,7 +39,9 @@ import (
 // Time: O(n).
 func lengthOfLongestSubstring(s string) int {
 	lastSeen := map[byte]int{} // character -> last index where we saw it
+	// left = first index of the window
 	left := 0
+	// the longest window found so far
 	best := 0
 
 	for right := 0; right < len(s); right++ {
@@ -51,8 +53,10 @@ func lengthOfLongestSubstring(s string) int {
 			left = index + 1
 		}
 
+		// remember where we saw this character (overwrites the older position)
 		lastSeen[ch] = right
 
+		// the window is valid again: is it the longest so far?
 		size := right - left + 1
 		if size > best {
 			best = size

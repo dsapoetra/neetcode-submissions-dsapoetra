@@ -33,7 +33,12 @@ import (
 
 // ===================== Solution =====================
 
+// Idea: put all numbers in a set, so "is x in the list?" is one lookup.
+// A run of consecutive numbers starts at a number n where n-1 is NOT in
+// the set. From every such start, count upwards: n+1, n+2, ...
+// Time: O(n). Every number is counted in only one run.
 func longestConsecutive(nums []int) int {
+	// seen[n] is true if n is in the list (duplicates end up as one entry)
 	seen := make(map[int]bool)
 	for _, n := range nums {
 		seen[n] = true
@@ -42,15 +47,18 @@ func longestConsecutive(nums []int) int {
 	longest := 0
 	for n := range seen {
 		// Only start counting from the beginning of a run.
+		// If n-1 exists, n is in the middle of a run: skip it.
 		if seen[n-1] {
 			continue
 		}
 
+		// n is the start of a run: count how far it goes
 		length := 1
 		for seen[n+length] {
 			length++
 		}
 
+		// keep the longest run found so far
 		if length > longest {
 			longest = length
 		}

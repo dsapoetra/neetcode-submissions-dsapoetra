@@ -33,15 +33,21 @@ import (
 
 // ===================== Solution =====================
 
+// Idea: sort the numbers. After sorting, equal numbers sit next to each
+// other, so we only have to compare each number with the one before it.
+// Time: O(n log n). Note: sorting changes the order of the input list.
 func hasDuplicate(nums []int) bool {
 	slices.Sort(nums)
 
+	// start at 1 so there is always a previous number to compare with
 	for i := 1; i < len(nums); i++ {
+		// same as the neighbour before it: found a duplicate
 		if nums[i] == nums[i-1] {
 			return true
 		}
 	}
 
+	// no two neighbours were equal, so every number is different
 	return false
 }
 

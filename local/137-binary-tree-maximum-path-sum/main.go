@@ -50,10 +50,13 @@ type TreeNode struct {
 // A side with a negative sum is ignored (we use 0 instead).
 // Time: O(n).
 func maxPathSum(root *TreeNode) int {
+	// start with the root alone, so the answer is right even if all values
+	// are negative
 	best := root.Val
 
 	var bestDown func(node *TreeNode) int
 	bestDown = func(node *TreeNode) int {
+		// nothing here: adds 0 to a path
 		if node == nil {
 			return 0
 		}
@@ -80,6 +83,7 @@ func maxPathSum(root *TreeNode) int {
 		return node.Val + right
 	}
 
+	// visit every node; bestDown updates best on the way
 	bestDown(root)
 	return best
 }

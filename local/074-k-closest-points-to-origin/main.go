@@ -38,11 +38,15 @@ import (
 // not change which one is smaller, so we can skip it.
 // Time: O(n log n).
 func kClosest(points [][]int, k int) [][]int {
+	// sort.Slice asks us: "must point a come before point b?"
 	sort.Slice(points, func(a, b int) bool {
+		// squared distance to (0, 0): x*x + y*y
 		distA := points[a][0]*points[a][0] + points[a][1]*points[a][1]
 		distB := points[b][0]*points[b][0] + points[b][1]*points[b][1]
+		// the closer point comes first
 		return distA < distB
 	})
+	// the list is now ordered from close to far: the first k are the answer
 	return points[:k]
 }
 

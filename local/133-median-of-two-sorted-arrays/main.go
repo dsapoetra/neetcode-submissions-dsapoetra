@@ -44,14 +44,18 @@ import (
 // The faster version (binary search, O(log(m + n))) is much harder to get right.
 func findMedianSortedArrays(nums1 []int, nums2 []int) float64 {
 	total := len(nums1) + len(nums2)
+	// index of the middle number in the merged order
+	// (for an even total: the second of the two middle numbers)
 	middle := total / 2
 
 	i, j := 0, 0 // positions in nums1 and nums2
+	// previous / current = the last two numbers we passed
 	previous := 0
 	current := 0
 
 	// take the next smallest number, middle+1 times
 	for step := 0; step <= middle; step++ {
+		// the old current becomes the previous number
 		previous = current
 
 		if j >= len(nums2) || (i < len(nums1) && nums1[i] <= nums2[j]) {
@@ -59,14 +63,17 @@ func findMedianSortedArrays(nums1 []int, nums2 []int) float64 {
 			current = nums1[i]
 			i++
 		} else {
+			// otherwise the next number of nums2 is the smaller one
 			current = nums2[j]
 			j++
 		}
 	}
 
+	// odd total: current is the middle number
 	if total%2 == 1 {
 		return float64(current)
 	}
+	// even total: the average of the two middle numbers
 	return float64(previous+current) / 2.0
 }
 

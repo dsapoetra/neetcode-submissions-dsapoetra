@@ -47,17 +47,21 @@ import (
 // At the end the string is valid if 0 is possible, that is low == 0.
 // Time: O(n).
 func checkValidString(s string) bool {
+	// at the start no bracket is open, so both ends of the range are 0
 	low := 0
 	high := 0
 
 	for i := 0; i < len(s); i++ {
 		if s[i] == '(' {
+			// one more open bracket for sure
 			low++
 			high++
 		} else if s[i] == ')' {
+			// one open bracket gets closed for sure
 			low--
 			high--
 		} else { // '*'
+			// '*' as ')' gives one less, '*' as '(' gives one more
 			low--
 			high++
 		}
@@ -65,10 +69,13 @@ func checkValidString(s string) bool {
 		if high < 0 {
 			return false // too many ')' even in the best case
 		}
+		// a negative count is not possible: in that case one '*' was
+		// an empty string instead of a ')'
 		if low < 0 {
 			low = 0
 		}
 	}
+	// valid only if "0 open brackets" is inside the possible range
 	return low == 0
 }
 

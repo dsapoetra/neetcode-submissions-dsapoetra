@@ -41,16 +41,20 @@ import (
 
 type Solution struct{}
 
+// Encode turns the list into one string.
 func (s *Solution) Encode(strs []string) string {
 	encoded := ""
 	for _, str := range strs {
+		// the length, a '#', then the string itself
 		encoded += strconv.Itoa(len(str)) + "#" + str
 	}
 	return encoded
 }
 
+// Decode turns the string from Encode back into the list.
 func (s *Solution) Decode(encoded string) []string {
 	res := []string{}
+	// i = where the next piece starts
 	i := 0
 	for i < len(encoded) {
 		// find the '#': the digits before it are the length

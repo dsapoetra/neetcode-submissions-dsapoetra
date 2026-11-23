@@ -37,7 +37,9 @@ import (
 // counted from the end.
 // Time: O(n log n).
 func findKthLargest(nums []int, k int) int {
+	// sort from small to big (this changes the input list)
 	sort.Ints(nums)
+	// the last index is len-1 (1st largest), so the k-th largest is at len-k
 	return nums[len(nums)-k]
 }
 

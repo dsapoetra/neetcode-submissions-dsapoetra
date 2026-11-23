@@ -42,10 +42,13 @@ import (
 // number without a partner is left.
 // Time: O(n), no extra memory.
 func singleNumber(nums []int) int {
+	// result starts at 0, because 0 ^ x = x
 	result := 0
 	for _, num := range nums {
+		// mix this number in; the second time a number comes, it cancels out
 		result ^= num
 	}
+	// all the pairs are gone, only the single number is left
 	return result
 }
 

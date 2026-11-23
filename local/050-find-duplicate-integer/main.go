@@ -40,12 +40,16 @@ import (
 // (The follow-up asks for no extra memory. That needs the "slow and fast
 // pointer" cycle trick, which is clever but much harder to understand.)
 func findDuplicate(nums []int) int {
+	// seen[x] is true once we have met the number x
+	// (the numbers go up to len(nums)-1, so every number is a valid index)
 	seen := make([]bool, len(nums))
 
 	for _, num := range nums {
+		// we met this number before: it is the duplicate
 		if seen[num] {
 			return num
 		}
+		// first time we meet this number: remember it
 		seen[num] = true
 	}
 	return -1 // never happens: the problem promises a duplicate

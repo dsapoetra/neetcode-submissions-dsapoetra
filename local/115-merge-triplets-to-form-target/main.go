@@ -49,12 +49,14 @@ func mergeTriplets(triplets [][]int, target []int) bool {
 			continue
 		}
 
+		// a safe triplet: note which target values it gives us
 		for i := 0; i < 3; i++ {
 			if triplet[i] == target[i] {
 				found[i] = true
 			}
 		}
 	}
+	// all three target values can be reached
 	return found[0] && found[1] && found[2]
 }
 

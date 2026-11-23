@@ -42,6 +42,7 @@ type KthLargest struct {
 	top []int // the k biggest numbers so far, sorted, smallest first
 }
 
+// Constructor adds the starting numbers one by one, using the same Add.
 func Constructor(k int, nums []int) KthLargest {
 	this := KthLargest{k: k}
 	for _, num := range nums {
@@ -59,8 +60,10 @@ func (this *KthLargest) Add(val int) int {
 
 	// keep only the k biggest
 	if len(this.top) > this.k {
+		// more than k numbers: drop the smallest (it is at the front)
 		this.top = this.top[1:]
 	}
+	// the smallest of the k biggest = the k-th largest
 	return this.top[0]
 }
 

@@ -40,17 +40,21 @@ import (
 // Time: O(n^2).
 func lengthOfLIS(nums []int) int {
 	dp := make([]int, len(nums))
+	// the longest subsequence found so far, over all end positions
 	best := 0
 
 	for i := 0; i < len(nums); i++ {
 		dp[i] = 1 // the number alone is a subsequence of length 1
 
+		// try to put nums[i] after every earlier, smaller number nums[j]
 		for j := 0; j < i; j++ {
+			// only update if that gives something longer than what we have
 			if nums[j] < nums[i] && dp[j]+1 > dp[i] {
 				dp[i] = dp[j] + 1
 			}
 		}
 
+		// the answer can end at any index, so keep the best dp[i]
 		if dp[i] > best {
 			best = dp[i]
 		}

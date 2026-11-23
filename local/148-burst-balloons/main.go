@@ -48,6 +48,7 @@ func maxCoins(nums []int) int {
 	balloons = append(balloons, 1)
 	n := len(balloons)
 
+	// best[left][right] starts at 0: with no balloon in between, no coins
 	best := make([][]int, n)
 	for i := range best {
 		best[i] = make([]int, n)
@@ -56,9 +57,13 @@ func maxCoins(nums []int) int {
 	// gap = distance between left and right; start with the smallest ranges
 	for gap := 2; gap < n; gap++ {
 		for left := 0; left+gap < n; left++ {
+			// right is fixed by left and the gap
 			right := left + gap
 
+			// try every balloon k between left and right as the LAST one to burst
 			for k := left + 1; k < right; k++ {
+				// coins from the left part + coins from the right part + bursting k
+				// itself, when only left and right are still next to it
 				coins := best[left][k] + best[k][right] + balloons[left]*balloons[k]*balloons[right]
 				if coins > best[left][right] {
 					best[left][right] = coins
@@ -66,6 +71,7 @@ func maxCoins(nums []int) int {
 			}
 		}
 	}
+	// everything between the two fake balloons = all the real balloons
 	return best[0][n-1]
 }
 

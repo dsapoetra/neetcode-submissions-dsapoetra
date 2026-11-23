@@ -44,12 +44,15 @@ import (
 func findCheapestPrice(n int, flights [][]int, src int, dst int, k int) int {
 	const inf = 1000000000
 
+	// at the start we only know how to reach src: it costs 0
+	// every other city is "not reachable yet" (inf)
 	price := make([]int, n)
 	for i := range price {
 		price[i] = inf
 	}
 	price[src] = 0
 
+	// round 0 = direct flights (0 stops), round k = routes with k stops
 	for round := 0; round <= k; round++ {
 		// copy, so this round only extends routes from the round before
 		next := make([]int, n)
@@ -57,13 +60,18 @@ func findCheapestPrice(n int, flights [][]int, src int, dst int, k int) int {
 
 		for _, flight := range flights {
 			from, to, cost := flight[0], flight[1], flight[2]
+			// only use this flight if we can already reach "from",
+			// and only if it makes the trip to "to" cheaper
+			// (read from price = previous round, write to next = this round)
 			if price[from] != inf && price[from]+cost < next[to] {
 				next[to] = price[from] + cost
 			}
 		}
+		// this round is done, its result is the input of the next round
 		price = next
 	}
 
+	// still inf: dst cannot be reached within k stops
 	if price[dst] == inf {
 		return -1
 	}

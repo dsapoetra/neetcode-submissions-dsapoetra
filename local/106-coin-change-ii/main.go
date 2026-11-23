@@ -40,11 +40,15 @@ import (
 // once (1+2 and 2+1 are the same combination, not two).
 // Time: O(coins * amount).
 func change(amount int, coins []int) int {
+	// ways[a] starts at 0 for every amount: no coins used yet
 	ways := make([]int, amount+1)
 	ways[0] = 1 // one way to make 0: use no coins
 
 	for _, coin := range coins {
+		// amounts smaller than the coin cannot use this coin, so start at "coin"
+		// Going from small to big lets the same coin be used many times.
 		for a := coin; a <= amount; a++ {
+			// every way to make (a - coin), plus this coin, is a new way to make a
 			ways[a] += ways[a-coin]
 		}
 	}

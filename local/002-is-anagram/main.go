@@ -33,16 +33,24 @@ import (
 
 // ===================== Solution =====================
 
+// Idea: two words are anagrams when they use exactly the same letters.
+// Sort the letters of both words. If the sorted versions are equal, the
+// words are anagrams.
+// Time: O(n log n).
 func isAnagram(s string, t string) bool {
+	// different lengths can never be anagrams
 	if len(s) != len(t) {
 		return false
 	}
 
+	// a string cannot be sorted directly, so turn it into a list of
+	// characters (runes) first
 	runes := []rune(s)
 	runesT := []rune(t)
 	slices.Sort(runes)
 	slices.Sort(runesT)
 
+	// same letters in the same sorted order means anagram
 	return slices.Equal(runes, runesT)
 }
 

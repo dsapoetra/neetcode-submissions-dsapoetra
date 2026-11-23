@@ -43,6 +43,8 @@ import (
 // Get and Put are both O(1).
 
 type cacheNode struct {
+	// the key is stored in the node too: when we throw away the oldest
+	// node, we need its key to delete it from the map
 	key   int
 	value int
 	prev  *cacheNode
@@ -51,11 +53,13 @@ type cacheNode struct {
 
 type LRUCache struct {
 	capacity int
-	nodes    map[int]*cacheNode
-	oldest   *cacheNode // fake node before the least recently used node
-	newest   *cacheNode // fake node after the most recently used node
+	nodes    map[int]*cacheNode // key -> its node in the list
+	oldest   *cacheNode         // fake node before the least recently used node
+	newest   *cacheNode         // fake node after the most recently used node
 }
 
+// Constructor makes an empty cache: the list has only the two fake nodes,
+// linked to each other.
 func Constructor(capacity int) LRUCache {
 	oldest := &cacheNode{}
 	newest := &cacheNode{}
@@ -66,19 +70,25 @@ func Constructor(capacity int) LRUCache {
 
 // remove takes a node out of the list.
 func (this *LRUCache) remove(node *cacheNode) {
+	// link the node before and the node after to each other; the node is
+	// now skipped. The fake end nodes make sure prev and next always exist.
 	node.prev.next = node.next
 	node.next.prev = node.prev
 }
 
 // addNewest puts a node at the "most recently used" end.
 func (this *LRUCache) addNewest(node *cacheNode) {
+	// last = the real node that is the newest one right now
 	last := this.newest.prev
+	// put the node between last and the fake newest node
 	last.next = node
 	node.prev = last
 	node.next = this.newest
 	this.newest.prev = node
 }
 
+// Get returns the value of the key, or -1 if the key is not in the cache.
+// Reading a key counts as using it.
 func (this *LRUCache) Get(key int) int {
 	node, found := this.nodes[key]
 	if !found {
@@ -90,20 +100,24 @@ func (this *LRUCache) Get(key int) int {
 	return node.value
 }
 
+// Put stores the value for the key. Writing a key counts as using it.
 func (this *LRUCache) Put(key int, value int) {
 	// the key already exists: take the old node out first
 	if node, found := this.nodes[key]; found {
 		this.remove(node)
 	}
 
+	// always make a fresh node with the new value and put it at the newest end
 	node := &cacheNode{key: key, value: value}
 	this.nodes[key] = node
 	this.addNewest(node)
 
 	// too many keys: throw away the least recently used one
 	if len(this.nodes) > this.capacity {
+		// the node right after the fake "oldest" node is the least recently used
 		lru := this.oldest.next
 		this.remove(lru)
+		// also remove it from the map, using the key stored in the node
 		delete(this.nodes, lru.key)
 	}
 }

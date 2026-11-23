@@ -43,6 +43,7 @@ import (
 // The slowest useful speed is 1, the fastest is the biggest pile.
 // Time: O(n * log(biggest pile)).
 func minEatingSpeed(piles []int, h int) int {
+	// the range of speeds to search: 1 .. biggest pile
 	left := 1
 	right := 0
 	for _, pile := range piles {
@@ -52,6 +53,7 @@ func minEatingSpeed(piles []int, h int) int {
 	}
 
 	for left < right {
+		// try the speed in the middle
 		mid := (left + right) / 2
 		if hoursNeeded(piles, mid) <= h {
 			right = mid // fast enough: maybe an even slower speed works
@@ -59,6 +61,7 @@ func minEatingSpeed(piles []int, h int) int {
 			left = mid + 1 // too slow
 		}
 	}
+	// left == right: the slowest speed that still works
 	return left
 }
 

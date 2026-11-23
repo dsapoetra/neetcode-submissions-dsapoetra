@@ -48,17 +48,21 @@ type openBar struct {
 }
 
 func largestRectangleArea(heights []int) int {
+	// the biggest area found so far
 	best := 0
 	stack := []openBar{}
 
 	for i, height := range heights {
+		// a new bar starts at its own index, unless it can reach further back
 		start := i
 
 		// taller bars on the stack end here
 		for len(stack) > 0 && stack[len(stack)-1].height > height {
+			// take the taller bar off the stack
 			top := stack[len(stack)-1]
 			stack = stack[:len(stack)-1]
 
+			// its rectangle goes from top.start up to (not including) i
 			area := top.height * (i - top.start)
 			if area > best {
 				best = area
@@ -66,11 +70,13 @@ func largestRectangleArea(heights []int) int {
 			start = top.start // the new, lower bar reaches back this far
 		}
 
+		// the new bar is now open
 		stack = append(stack, openBar{start, height})
 	}
 
 	// bars still on the stack reach all the way to the end
 	for _, bar := range stack {
+		// width = from bar.start to the end of the histogram
 		area := bar.height * (len(heights) - bar.start)
 		if area > best {
 			best = area

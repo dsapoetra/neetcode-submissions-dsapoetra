@@ -45,22 +45,29 @@ func orangesRotting(grid [][]int) int {
 	cols := len(grid[0])
 
 	queue := [][2]int{} // the fruits that became rotten most recently
+	// how many fresh fruits are left
 	fresh := 0
 	for r := 0; r < rows; r++ {
 		for c := 0; c < cols; c++ {
 			if grid[r][c] == 2 {
+				// 2 = rotten: it is a starting point for the BFS
 				queue = append(queue, [2]int{r, c})
 			} else if grid[r][c] == 1 {
+				// 1 = fresh: count it
 				fresh++
 			}
 		}
 	}
 
+	// the four neighbors: down, up, right, left
 	directions := [][2]int{{1, 0}, {-1, 0}, {0, 1}, {0, -1}}
 	minutes := 0
 
+	// one loop = one minute. Stop when nothing can rot any more,
+	// or when no fresh fruit is left
 	for len(queue) > 0 && fresh > 0 {
 		minutes++
+		// the fruits that become rotten in this minute
 		next := [][2]int{}
 
 		for _, cell := range queue {
@@ -76,9 +83,11 @@ func orangesRotting(grid [][]int) int {
 				}
 			}
 		}
+		// the newly rotten fruits spread the rot in the next minute
 		queue = next
 	}
 
+	// some fresh fruits could not be reached by any rotten fruit
 	if fresh > 0 {
 		return -1
 	}

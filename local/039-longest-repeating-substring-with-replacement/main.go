@@ -44,7 +44,9 @@ import (
 // Time: O(26 * n).
 func characterReplacement(s string, k int) int {
 	count := make([]int, 26) // count[i] = how many of letter 'A'+i in the window
+	// left = first index of the window
 	left := 0
+	// the longest valid window found so far
 	best := 0
 
 	for right := 0; right < len(s); right++ {
@@ -53,10 +55,12 @@ func characterReplacement(s string, k int) int {
 
 		// shrink while the window needs more than k changes
 		for (right-left+1)-mostCommon(count) > k {
+			// remove the leftmost letter from the window
 			count[s[left]-'A']--
 			left++
 		}
 
+		// the window is valid now: is it the longest so far?
 		if right-left+1 > best {
 			best = right - left + 1
 		}

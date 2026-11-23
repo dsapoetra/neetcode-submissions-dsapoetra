@@ -38,6 +38,7 @@ import (
 // Time: O(n^2).
 func countSubstrings(s string) int {
 	count := 0
+	// every position can be a center
 	for i := 0; i < len(s); i++ {
 		count += countFromCenter(s, i, i)   // odd length palindromes
 		count += countFromCenter(s, i, i+1) // even length palindromes
@@ -47,9 +48,13 @@ func countSubstrings(s string) int {
 
 // countFromCenter counts the palindromes that have this center.
 func countFromCenter(s string, left int, right int) int {
+	// start at the center and grow outwards
 	count := 0
+	// stop at the edge of the string, or when the two sides do not match
 	for left >= 0 && right < len(s) && s[left] == s[right] {
+		// s[left..right] is a palindrome
 		count++
+		// try one letter wider on both sides
 		left--
 		right++
 	}

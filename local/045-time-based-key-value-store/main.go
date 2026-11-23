@@ -41,27 +41,36 @@ import (
 // which is a binary search on that sorted list.
 // Set: O(1). Get: O(log n).
 
+// timeEntry is one stored value and the time it was stored.
 type timeEntry struct {
 	timestamp int
 	value     string
 }
 
 type TimeMap struct {
+	// key -> all values stored for this key, oldest first
 	entries map[string][]timeEntry
 }
 
+// Constructor makes an empty store.
 func Constructor() TimeMap {
 	return TimeMap{entries: map[string][]timeEntry{}}
 }
 
+// Set stores the value for the key at this timestamp.
+// Adding at the end keeps the list sorted, because timestamps only go up.
 func (this *TimeMap) Set(key string, value string, timestamp int) {
 	this.entries[key] = append(this.entries[key], timeEntry{timestamp, value})
 }
 
+// Get returns the newest value of the key that was stored at or before
+// the timestamp, or "" if there is none.
 func (this *TimeMap) Get(key string, timestamp int) string {
+	// an unknown key gives an empty list, and the loop below does nothing
 	list := this.entries[key]
 	answer := "" // stays empty if nothing is old enough
 
+	// normal binary search over the positions in the list
 	left := 0
 	right := len(list) - 1
 	for left <= right {
